@@ -10,10 +10,10 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl({required this.homeDatasource});
 
   @override
-  Future<Either<Failure, String>> addTasks(TaskModel taskModel) async {
+  Future<Either<Failure, TaskModel>> addTasks(TaskModel taskModel) async {
     try {
       await homeDatasource.addTask(taskModel);
-      return Right('success');
+      return Right(taskModel);
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
     }

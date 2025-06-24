@@ -8,18 +8,62 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepository repository;
-  HomeBloc(this.repository) : super(HomeInitial()) {
-    on<HomeEvent>((event, emit) {});
+  
+  List<TaskModel> _taskList = [];
 
-    on<HomeGetAllTasksEvent>(_homeGetAllTasks);
+  HomeBloc(this.repository) : super(HomeInitial()) {
+    on<HomeGetAllTasksEvent>(_onGetAllTasks);
+    on<HomeAddTaskEvent>(_onAddTask);
+    on<HomeUpdateTaskEvent>(_onUpdateTask);
+    on<HomeDeleteTaskEvent>(_onDeleteTask);
   }
 
-  _homeGetAllTasks(HomeGetAllTasksEvent event, emit) async {
+  Future<void> _onGetAllTasks(
+      HomeGetAllTasksEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoading());
     final result = await repository.getAllTasks();
     result.fold(
-      (l) => emit(HomeError(l.message)),
-      (r) => emit(HomeGetAllTasks(r)),
+      (failure) => emit(HomeError(failure.message)),
+      (tasks) {
+        _taskList = tasks;
+        emit(HomeGetAllTasks(_taskList));
+      },
+    );
+  }
+
+  Future<void> _onAddTask(
+      HomeAddTaskEvent event, Emitter<HomeState> emit) async {
+    final result = await repository.addTasks(event.taskModel);
+    result.fold(
+      (failure) => emit(HomeError(failure.message)),
+      (newTask) {
+        _taskList.add(newTask);
+        emit(HomeGetAllTasks(List.from(_taskList)));
+      },
+    );
+  }
+
+  Future<void> _onUpdateTask(
+      HomeUpdateTaskEvent event, Emitter<HomeState> emit) async {
+    final result = await repository.updateTasks(event.index, event.updatedTask);
+    result.fold(
+      (failure) => emit(HomeError(failure.message)),
+      (updatedTask) {
+        _taskList[event.index] = updatedTask;
+        emit(HomeGetAllTasks(List.from(_taskList)));
+      },
+    );
+  }
+
+  Future<void> _onDeleteTask(
+      HomeDeleteTaskEvent event, Emitter<HomeState> emit) async {
+    final result = await repository.deleteTasks(event.index);
+    result.fold(
+      (failure) => emit(HomeError(failure.message)),
+      (_) {
+        _taskList.removeAt(event.index);
+        emit(HomeGetAllTasks(List.from(_taskList)));
+      },
     );
   }
 }

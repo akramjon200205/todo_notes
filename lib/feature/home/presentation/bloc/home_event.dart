@@ -11,14 +11,21 @@ class HomeGetAllTasksEvent extends HomeEvent {
   const HomeGetAllTasksEvent();
 }
 
+// ignore: must_be_immutable
 class HomeAddTaskEvent extends HomeEvent {
-  const HomeAddTaskEvent();
+  TaskModel taskModel;
+  HomeAddTaskEvent(this.taskModel);
 }
 
+// ignore: must_be_immutable
 class HomeUpdateTaskEvent extends HomeEvent {
-  const HomeUpdateTaskEvent();
+  int index;
+  TaskModel updatedTask;
+  HomeUpdateTaskEvent(this.index, this.updatedTask);
 }
 
+// ignore: must_be_immutable
 class HomeDeleteTaskEvent extends HomeEvent {
-  const HomeDeleteTaskEvent();
+  int index;
+  HomeDeleteTaskEvent(this.index);
 }

@@ -33,8 +33,7 @@ class HomeDeleteTasks extends HomeState {
 
 // ignore: must_be_immutable
 class HomeAddTasks extends HomeState {
-  TaskModel taskModel;
-  HomeAddTasks({required this.taskModel});
+  const HomeAddTasks();
 }
 
 class HomeError extends HomeState {
