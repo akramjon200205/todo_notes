@@ -17,6 +17,23 @@ class AppTextStyles {
     size: 18,
   );
 
+  static TextStyle listText = s(
+    color: AppColors.black,
+    weight: FontWeight.w700,
+    size: 16,
+  );
+
+  static TextStyle listsNameText = s(
+    color: AppColors.black,
+    weight: FontWeight.w600,
+    size: 19,
+  );
+  static TextStyle listsSubText = s(
+    color: AppColors.black,
+    weight: FontWeight.w400,
+    size: 14,
+  );
+
   static TextStyle s({
     double size = 14,
     FontWeight weight = FontWeight.normal,

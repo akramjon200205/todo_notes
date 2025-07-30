@@ -19,10 +19,7 @@ class HomeGetAllTasks extends HomeState {
 
 // ignore: must_be_immutable
 class HomeUpdateTasks extends HomeState {
-  int index;
-  TaskModel updatedTask;
-
-  HomeUpdateTasks({required this.index, required this.updatedTask});
+  const HomeUpdateTasks();
 }
 
 // ignore: must_be_immutable
