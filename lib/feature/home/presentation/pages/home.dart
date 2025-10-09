@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,66 +58,65 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
+      body: BlocConsumer<HomeBloc, HomeState>(
+        listener: (_, state) {
           if (state is HomeLoading) {
-            return Center(child: CircularProgressIndicator());
+            Center(child: CircularProgressIndicator());
           }
           if (state is HomeError) {
-            return Center(child: Text('Xatolik: ${state.message}'));
+            Center(child: Text('Xatolik: ${state.message}'));
           }
-          if (state is HomeGetAllTasks) {
-            return SafeArea(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          title: Text("Today", style: AppTextStyles.homeText),
-                          trailing: InkWell(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.more_horiz,
-                              size: 24,
-                              color: AppColors.blue,
-                            ),
+        },
+        builder: (context, state) {
+          return SafeArea(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text("Today", style: AppTextStyles.homeText),
+                        trailing: InkWell(
+                          onTap: () {},
+                          child: Icon(
+                            Icons.more_horiz,
+                            size: 24,
+                            color: AppColors.blue,
                           ),
-                          leading: SizedBox(width: 28, height: 28),
                         ),
-                        SizedBox(height: 20),
-                        TasksBuilderWidget(),
-                        ListsBuilderWidget(),
-                      ],
-                    ),
+                        leading: SizedBox(width: 28, height: 28),
+                      ),
+                      SizedBox(height: 20),
+                      TasksBuilderWidget(),
+                      ListsBuilderWidget(),
+                      SizedBox(height: 20),
+                    ],
                   ),
-                  _isOpened
-                      ? BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              // ignore: deprecated_member_use
-                              color: Colors.white.withOpacity(0.2),
-                            ),
+                ),
+                _isOpened
+                    ? BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
+                            color: Colors.white.withOpacity(0.2),
                           ),
-                        )
-                      : SizedBox.shrink(),
+                        ),
+                      )
+                    : SizedBox.shrink(),
 
-                  Positioned(
-                    right: 20,
-                    bottom: 85,
-                    child: ListAndTaskWidget(position: _slideAnimation),
-                  ),
-                ],
-              ),
-            );
-          }
-          return SizedBox.shrink();
+                Positioned(
+                  right: 20,
+                  bottom: 85,
+                  child: ListAndTaskWidget(position: _slideAnimation),
+                ),
+              ],
+            ),
+          );
         },
       ),
-
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
         backgroundColor: _isOpened ? AppColors.blue : AppColors.white,

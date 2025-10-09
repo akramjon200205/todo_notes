@@ -18,15 +18,18 @@ class ListModelAdapter extends TypeAdapter<ListModel> {
     };
     return ListModel(
       fields[0] as String?,
+      fields[1] as Color?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ListModel obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.color);
   }
 
   @override

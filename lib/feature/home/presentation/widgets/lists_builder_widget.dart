@@ -27,7 +27,11 @@ class _ListsWidgetState extends State<ListsBuilderWidget> {
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return ListsWidget(name: "Inbox", countTasks: index, color: AppColors.green,);
+              return ListsWidget(
+                name: "Inbox",
+                countTasks: index,
+                color: AppColors.green,
+              );
             },
             separatorBuilder: (context, index) {
               return SizedBox(height: 10);

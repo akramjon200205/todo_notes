@@ -25,6 +25,22 @@ class HomeUpdateTaskEvent extends HomeEvent {
 }
 
 // ignore: must_be_immutable
+class OnChangeTimeEvent extends HomeEvent {
+TimeOfDay time;
+OnChangeTimeEvent(this.time);
+}
+// ignore: must_be_immutable
+class OnChangeDateEvent extends HomeEvent {
+DateTime date;
+OnChangeDateEvent(this.date);
+}
+// ignore: must_be_immutable
+class OnChangeTextEvent extends HomeEvent {
+String text;
+OnChangeTextEvent(this.text);
+}
+
+// ignore: must_be_immutable
 class HomeDeleteTaskEvent extends HomeEvent {
   int index;
   HomeDeleteTaskEvent(this.index);

@@ -14,7 +14,8 @@ class HomeLoading extends HomeState {}
 // ignore: must_be_immutable
 class HomeGetAllTasks extends HomeState {
   List<TaskModel> taskModelList;
-  HomeGetAllTasks(this.taskModelList);
+  Map<String, List<TaskModel>> groupedByType;
+  HomeGetAllTasks({required this.taskModelList, required this.groupedByType});
 }
 
 // ignore: must_be_immutable
@@ -24,8 +25,7 @@ class HomeUpdateTasks extends HomeState {
 
 // ignore: must_be_immutable
 class HomeDeleteTasks extends HomeState {
-  int index;
-  HomeDeleteTasks({required this.index});
+  const HomeDeleteTasks();
 }
 
 // ignore: must_be_immutable
@@ -33,6 +33,7 @@ class HomeAddTasks extends HomeState {
   const HomeAddTasks();
 }
 
+// ignore: must_be_immutable
 class HomeError extends HomeState {
   final String message;
 

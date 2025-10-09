@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_notes/core/route/routes.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
-import 'package:todo_notes/feature/home/presentation/pages/home.dart';
 import 'package:todo_notes/core/di/dependency_injection.dart' as sl;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await sl.init();
-  runApp(const MyApp());
+  runApp  (const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,7 +21,11 @@ class MyApp extends StatelessWidget {
           create: (_) => HomeBloc(sl.di())..add(HomeGetAllTasksEvent()),
         ),
       ],
-      child: MaterialApp(debugShowCheckedModeBanner: false, home: Home()),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: AppRoutes.home,
+        onGenerateRoute: AppRouter.generateRoute,
+      ),
     );
   }
 }

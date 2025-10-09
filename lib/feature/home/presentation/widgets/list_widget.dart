@@ -27,7 +27,11 @@ class ListsWidget extends StatelessWidget {
           Text(name, style: AppTextStyles.listsNameText),
           SizedBox(height: 4),
           Text(
-            countTasks == 0 || countTasks < 0 ? "Empty list" : countTasks > 1 ? "$countTasks tasks" : "$countTasks task",
+            countTasks == 0 || countTasks < 0
+                ? "Empty list"
+                : countTasks > 1
+                ? "$countTasks tasks"
+                : "$countTasks task",
             style: AppTextStyles.listsSubText,
           ),
         ],

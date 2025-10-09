@@ -34,6 +34,24 @@ class AppTextStyles {
     size: 14,
   );
 
+  static TextStyle tasksEditText = s(
+    color: AppColors.blue,
+    weight: FontWeight.w400,
+    size: 18,
+  );
+
+  static TextStyle tasksText = s(
+    color: AppColors.black.withValues(alpha: 0.15),
+    weight: FontWeight.w500,
+    size: 18,
+  );
+
+  static TextStyle taskTimeText = s(
+    color: AppColors.black,
+    weight: FontWeight.w500,
+    size: 14,
+  );
+
   static TextStyle s({
     double size = 14,
     FontWeight weight = FontWeight.normal,
