@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
@@ -6,9 +7,9 @@ import 'package:todo_notes/core/route/routes.dart';
 
 // ignore: must_be_immutable
 class ListAndTaskWidget extends StatelessWidget {
-  ListAndTaskWidget({required this.position, super.key});
+  ListAndTaskWidget({required this.position, required this.onTap, super.key});
   Animation<Offset> position;
-
+  Function onTap;
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
@@ -31,14 +32,20 @@ class ListAndTaskWidget extends StatelessWidget {
         child: Column(
           children: [
             FloatingAnimationWidget(
-              function: () => Navigator.pushNamed(context, AppRoutes.tasks),
+              function: () {
+                onTap();
+                Navigator.pushNamed(context, AppRoutes.tasks);
+              },
               text: "Task",
               icon: Assets.icons.checkIcon,
             ),
             SizedBox(height: 18),
             FloatingAnimationWidget(
               text: "List",
-              function: () {},
+              function: () {
+                onTap();
+                Navigator.pushNamed(context, AppRoutes.lists);
+              },
               icon: Assets.icons.iconList,
             ),
           ],

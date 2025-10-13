@@ -110,7 +110,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 Positioned(
                   right: 20,
                   bottom: 85,
-                  child: ListAndTaskWidget(position: _slideAnimation),
+                  child: ListAndTaskWidget(
+                    position: _slideAnimation,
+                    onTap: () => _toggle(),
+                  ),
                 ),
               ],
             ),

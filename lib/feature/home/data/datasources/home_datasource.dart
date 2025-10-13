@@ -15,7 +15,9 @@ class HomeDatasourceImpl implements HomeDatasource {
     final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
       HiveBoxes.taskBox,
     );
+
     await taskBox.add(task);
+    await taskBox.close();
   }
 
   @override
@@ -23,7 +25,9 @@ class HomeDatasourceImpl implements HomeDatasource {
     final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
       HiveBoxes.taskBox,
     );
+
     await taskBox.deleteAt(index);
+    await taskBox.close();
   }
 
   @override
@@ -31,7 +35,10 @@ class HomeDatasourceImpl implements HomeDatasource {
     final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
       HiveBoxes.taskBox,
     );
-    return taskBox.values.toList();
+
+    final getAllTasks = taskBox.values.toList();
+    await taskBox.close();
+    return getAllTasks;
   }
 
   @override
@@ -40,6 +47,10 @@ class HomeDatasourceImpl implements HomeDatasource {
       HiveBoxes.taskBox,
     );
     await taskBox.putAt(index, updatedTask);
-    return taskBox.getAt(index)!;
+    final updated = taskBox.getAt(index)!;
+
+    await taskBox.close();
+
+    return updated;
   }
 }

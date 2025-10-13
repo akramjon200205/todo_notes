@@ -13,6 +13,10 @@ final class ListInitial extends ListState {
   List<Object> get props => [];
 }
 
+class ListLoading extends ListState {
+  const ListLoading();
+}
+
 class AddListState extends ListState {
   const AddListState();
 }
@@ -29,4 +33,17 @@ class DeleteListState extends ListState {
 class GetListState extends ListState {
   List<ListModel> listModel;
   GetListState(this.listModel);
+}
+
+class ListError extends ListState {
+  final String message;
+  const ListError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+// ignore: must_be_immutable
+class ChangeColorState extends ListState {
+  const ChangeColorState();
 }

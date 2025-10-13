@@ -10,4 +10,6 @@ class AppColors {
   static Color green = Color(0xff61DEA4);
   static Color grey = Color(0xffEBEFF5);
   static Color white = Colors.white;
+  static Color grey200 = Color(0xffEEEEEE);
+  static Color listColor = Color(0xffFAFAFA);
 }
