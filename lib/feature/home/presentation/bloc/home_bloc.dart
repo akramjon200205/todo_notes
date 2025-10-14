@@ -27,6 +27,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnChangeTimeEvent>(_onChangeTime);
     on<OnChangeDateEvent>(_onChangeDate);
     on<OnChangeTextEvent>(_onChangeText);
+    on<OnTaskIsCheckedEvent>(_onChangeTaskIsChecked);
+  }
+
+  Future<void> _onChangeTaskIsChecked(
+    OnTaskIsCheckedEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(HomeLoading());
+    TaskModel taskModel = taskList[event.index];
+    TaskModel isChecked = TaskModel(
+      isChecked: event.isChecked,
+      listModel: taskModel.listModel,
+      textTask: taskModel.textTask,
+      time: taskModel.time,
+    );
+    taskList[event.index] = isChecked;
+    await repository.updateTasks(event.index, isChecked);
+    emit(HomeUpdateTasks());
   }
 
   void _onChangeText(OnChangeTextEvent event, Emitter<HomeState> emit) {

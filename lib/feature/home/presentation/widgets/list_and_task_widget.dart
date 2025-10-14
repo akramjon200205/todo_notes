@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
@@ -16,6 +15,8 @@ class ListAndTaskWidget extends StatelessWidget {
       position: position,
       child: Container(
         width: 220,
+        height: 120,
+        alignment: Alignment.center,
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -30,6 +31,8 @@ class ListAndTaskWidget extends StatelessWidget {
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             FloatingAnimationWidget(
               function: () {

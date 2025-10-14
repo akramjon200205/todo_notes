@@ -21,9 +21,9 @@ class UpdateListEvent extends ListEvent {
 }
 
 // ignore: must_be_immutable
-class DeleteLisEvent extends ListEvent {
+class DeleteListEvent extends ListEvent {
   int index;
-  DeleteLisEvent(this.index);
+  DeleteListEvent(this.index);
 }
 
 class GetListEvent extends ListEvent {

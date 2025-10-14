@@ -19,10 +19,10 @@ class ListModelRepositoryImpl implements ListModelRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> deleteList(int index) async {
+  Future<Either<Failure, bool>> deleteList(int index) async {
     try {
       await listModelDatasource.deleteListModel(index);
-      return Right("$index list deleted");
+      return const Right(true);
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
     }

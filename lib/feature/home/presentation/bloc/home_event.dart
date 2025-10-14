@@ -26,22 +26,31 @@ class HomeUpdateTaskEvent extends HomeEvent {
 
 // ignore: must_be_immutable
 class OnChangeTimeEvent extends HomeEvent {
-TimeOfDay time;
-OnChangeTimeEvent(this.time);
+  TimeOfDay time;
+  OnChangeTimeEvent(this.time);
 }
+
 // ignore: must_be_immutable
 class OnChangeDateEvent extends HomeEvent {
-DateTime date;
-OnChangeDateEvent(this.date);
+  DateTime date;
+  OnChangeDateEvent(this.date);
 }
+
 // ignore: must_be_immutable
 class OnChangeTextEvent extends HomeEvent {
-String text;
-OnChangeTextEvent(this.text);
+  String text;
+  OnChangeTextEvent(this.text);
 }
 
 // ignore: must_be_immutable
 class HomeDeleteTaskEvent extends HomeEvent {
   int index;
   HomeDeleteTaskEvent(this.index);
+}
+
+// ignore: must_be_immutable
+class OnTaskIsCheckedEvent extends HomeEvent {
+  int index;
+  bool isChecked;
+  OnTaskIsCheckedEvent(this.index, this.isChecked);
 }

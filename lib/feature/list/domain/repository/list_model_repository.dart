@@ -9,5 +9,5 @@ abstract class ListModelRepository {
     int index,
     ListModel updateList,
   );
-  Future<Either<Failure, dynamic>> deleteList(int index);
+  Future<Either<Failure, bool>> deleteList(int index);
 }

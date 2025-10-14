@@ -33,10 +33,12 @@ class _BottomBarListsState extends State<BottomBarLists> {
                 child: TaskCalendar(),
               ),
             ),
-            child: Icon(
-              Icons.calendar_today_outlined,
-              size: 25,
-              color: AppColors.blue,
+            child: SizedBox(
+              child: Icon(
+                Icons.calendar_today_outlined,
+                size: 25,
+                color: AppColors.blue,
+              ),
             ),
           ),
           SizedBox(width: 25),
@@ -54,7 +56,9 @@ class _BottomBarListsState extends State<BottomBarLists> {
                 ),
               ),
             ),
-            child: Icon(CupertinoIcons.time, size: 25, color: AppColors.blue),
+            child: SizedBox(
+              child: Icon(CupertinoIcons.time, size: 25, color: AppColors.blue),
+            ),
           ),
           Spacer(),
           InkWell(
@@ -65,8 +69,10 @@ class _BottomBarListsState extends State<BottomBarLists> {
                 height: double.maxFinite,
                 child: ListPicked(),
               ),
-            ), 
-            child: Text("Item", style: AppTextStyles.taskTimeText),
+            ),
+            child: SizedBox(
+              child: Text("Item", style: AppTextStyles.taskTimeText),
+            ),
           ),
           SizedBox(width: 15),
           Container(

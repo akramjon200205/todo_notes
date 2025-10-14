@@ -18,10 +18,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => ListBloc(sl.di())..add(GetListEvent())),
         BlocProvider(
           create: (_) => HomeBloc(sl.di())..add(HomeGetAllTasksEvent()),
         ),
-        BlocProvider(create: (_) => ListBloc(sl.di())..add(GetListEvent())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

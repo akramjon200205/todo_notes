@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive/hive.dart';
 import 'package:todo_notes/core/hive_box/hive_box.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
@@ -9,8 +11,10 @@ class ListModelDatasourceImpl implements ListModelDatasource {
     final Box<ListModel> listBox = await Hive.openBox<ListModel>(
       HiveBoxes.listBox,
     );
+    log(listModel.name ?? '');
+
     await listBox.add(listModel);
-    await listBox.close();
+    log(listBox.values.toString());
   }
 
   @override
@@ -19,7 +23,6 @@ class ListModelDatasourceImpl implements ListModelDatasource {
       HiveBoxes.listBox,
     );
     await listBox.deleteAt(index);
-    await listBox.close();
   }
 
   @override
@@ -28,7 +31,7 @@ class ListModelDatasourceImpl implements ListModelDatasource {
       HiveBoxes.listBox,
     );
     final listModel = listBox.values.toList();
-    await listBox.close();
+    log(listModel.toString());
     return listModel;
   }
 
@@ -38,8 +41,6 @@ class ListModelDatasourceImpl implements ListModelDatasource {
       HiveBoxes.listBox,
     );
     await listBox.putAt(index, listModel);
-    final updated = listBox.getAt(index)!;
-    await listBox.close();
-    return updated;
+    return listBox.getAt(index)!;
   }
 }

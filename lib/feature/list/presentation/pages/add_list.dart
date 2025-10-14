@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
+import 'package:todo_notes/feature/list/data/models/list_model.dart';
 import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 import 'package:todo_notes/feature/list/presentation/widgets/color_picker_widget.dart';
 
@@ -36,74 +37,115 @@ class _AddListState extends State<AddList> {
       ),
       body: BlocBuilder<ListBloc, ListState>(
         builder: (context, state) {
-          return SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(11),
-                      border: Border.all(color: AppColors.grey200, width: 1),
-                      color: AppColors.listColor,
+          return Padding(
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                Container(
+                  padding: EdgeInsets.only(left: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(11),
+                    border: Border.all(color: AppColors.grey200, width: 1),
+                    color: AppColors.listColor,
+                  ),
+                  child: TextField(
+                    controller: listController,
+                    style: AppTextStyles.listsNameText.copyWith(
+                      fontWeight: FontWeight.w400,
                     ),
-                    child: TextField(
-                      controller: listController,
-                      style: AppTextStyles.listsNameText.copyWith(
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusColor: AppColors.listColor,
+
+                      fillColor: AppColors.listColor,
+                      hintText: "Write your list name",
+                      hintStyle: AppTextStyles.listsNameText.copyWith(
                         fontWeight: FontWeight.w400,
                       ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusColor: AppColors.listColor,
-                        hoverColor: AppColors.black,
-                        fillColor: AppColors.listColor,
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: InkWell(
-                            onTap: () => showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                alignment: Alignment.center,
-                                title: Text(
-                                  "Pick your list color",
-                                  style: AppTextStyles.listsSubText,
-                                  textAlign: TextAlign.center,
-                                ),
-                                content: Column(
-                                  children: [
-                                    ColorPickerWidget(),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text(
-                                        "Select",
-                                        style: AppTextStyles.taskText.copyWith(
-                                          color: AppColors.blue,
-                                        ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(
+                          right: 10,
+                          bottom: 10,
+                          top: 10,
+                        ),
+                        child: InkWell(
+                          onTap: () => showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              alignment: Alignment.center,
+                              title: Text(
+                                "Pick your list color",
+                                style: AppTextStyles.listsSubText,
+                                textAlign: TextAlign.center,
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ColorPickerWidget(),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(
+                                      "Select",
+                                      style: AppTextStyles.taskText.copyWith(
+                                        color: AppColors.blue,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Container(
-                              height: 15,
-                              width: 15,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: context.read<ListBloc>().listColor,
-                              ),
+                          ),
+                          child: Container(
+                            height: 10,
+                            width: 10,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: context.read<ListBloc>().listColor,
                             ),
                           ),
                         ),
                       ),
-                      cursorColor: AppColors.black,
+                    ),
+                    cursorColor: AppColors.black,
+                  ),
+                ),
+                Spacer(),
+                InkWell(
+                  onTap: () {
+                    if (listController.text.isNotEmpty) {
+                      context.read<ListBloc>().add(
+                        AddListEvent(
+                          listModel: ListModel(
+                            listController.text,
+                            context.read<ListBloc>().listColor,
+                          ),
+                        ),
+                      );
+                      listController.clear();
+                      Navigator.pop(context); // sahifadan chiqish
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.blue,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      "Add list",
+                      style: AppTextStyles.listText.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: 35),
+              ],
             ),
           );
         },

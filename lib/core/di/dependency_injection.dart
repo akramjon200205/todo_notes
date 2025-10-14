@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:todo_notes/core/hive_box/hive_box.dart';
 import 'package:todo_notes/feature/home/data/datasources/home_datasource.dart';
 import 'package:todo_notes/feature/list/data/datasource/local/list_model_datasource_impl.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';

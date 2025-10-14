@@ -18,7 +18,6 @@ class _ListPickedState extends State<ListPicked> {
       builder: (context, state) {
         if (state is HomeGetAllTasks) {
           final grouped = state.groupedByType;
-
           final typeKeys = grouped.keys.toList();
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,

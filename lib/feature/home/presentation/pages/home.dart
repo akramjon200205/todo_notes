@@ -1,11 +1,12 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
-import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/core/hive_box/hive_box.dart';
+import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
+import 'package:todo_notes/feature/home/presentation/widgets/app_bar_task.dart';
+import 'package:todo_notes/feature/home/presentation/widgets/backdrop_filter_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/list_and_task_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/tasks_builder_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/lists_builder_widget.dart';
@@ -21,19 +22,26 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   bool _isOpened = false;
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  Map<String, List<TaskModel>> groupedByType = {};
 
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 600),
     );
-
     _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 5), // pastdan chiqadi
-      end: Offset(0, 0.0),
-    ).animate(CurvedAnimation(parent: _controller, curve: Easing.standard));
+      begin: const Offset(-1, 0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -72,47 +80,37 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             child: Stack(
               children: [
                 SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        title: Text("Today", style: AppTextStyles.homeText),
-                        trailing: InkWell(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.more_horiz,
-                            size: 24,
-                            color: AppColors.blue,
-                          ),
-                        ),
-                        leading: SizedBox(width: 28, height: 28),
-                      ),
-                      SizedBox(height: 20),
-                      TasksBuilderWidget(),
-                      ListsBuilderWidget(),
-                      SizedBox(height: 20),
+                      AppBarTask(),
+                      const SizedBox(height: 20),
+                      const TasksBuilderWidget(),
+                      const ListsBuilderWidget(),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
-                _isOpened
-                    ? BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            // ignore: deprecated_member_use
-                            color: Colors.white.withOpacity(0.2),
-                          ),
-                        ),
-                      )
-                    : SizedBox.shrink(),
+                if (_isOpened)
+                  BackdropFilterWidget(fadeAnimation: _fadeAnimation),
 
-                Positioned(
-                  right: 20,
-                  bottom: 85,
-                  child: ListAndTaskWidget(
-                    position: _slideAnimation,
-                    onTap: () => _toggle(),
+                Align(
+                  alignment: const Alignment(0.9, 0.85),
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      if (_controller.value == 0 && !_isOpened) {
+                        return const SizedBox.shrink();
+                      }
+                      return FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: ListAndTaskWidget(
+                          position: _slideAnimation,
+                          onTap: _toggle,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -120,13 +118,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        backgroundColor: _isOpened ? AppColors.blue : AppColors.white,
-        onPressed: _toggle,
-        child: AnimatedRotation(
-          turns: _isOpened ? 0.125 : 0,
-          duration: Duration(milliseconds: 300),
+      floatingActionButton: AnimatedRotation(
+        turns: _isOpened ? 0.125 : 0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutBack,
+        child: FloatingActionButton(
+          backgroundColor: _isOpened ? AppColors.blue : AppColors.white,
+          shape: const CircleBorder(),
+          onPressed: _toggle,
           child: Icon(
             Icons.add,
             color: _isOpened ? AppColors.white : AppColors.blue,

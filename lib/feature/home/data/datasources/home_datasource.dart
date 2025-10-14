@@ -17,6 +17,7 @@ class HomeDatasourceImpl implements HomeDatasource {
     );
 
     await taskBox.add(task);
+    
     await taskBox.close();
   }
 
