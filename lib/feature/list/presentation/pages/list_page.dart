@@ -17,7 +17,6 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // context.read<ListBloc>().add(GetListEvent());
   }
@@ -46,6 +45,9 @@ class _ListPageState extends State<ListPage> {
           if (state is ListLoading) {
             return CircularProgressIndicator();
           }
+          if (state is ListError) {
+            return Center(child: Text(state.message));
+          }
           if (state is GetListState) {
             return SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -56,9 +58,7 @@ class _ListPageState extends State<ListPage> {
                     shrinkWrap: true,
                     itemBuilder: (_, index) {
                       return ListsWidget(
-                        name:
-                          state.listModel[index].name ??
-                            '',
+                        name: state.listModel[index].name ?? '',
                         countTasks: index,
                         color: state.listModel[index].color,
                       );

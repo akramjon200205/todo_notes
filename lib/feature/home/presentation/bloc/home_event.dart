@@ -14,14 +14,16 @@ class HomeGetAllTasksEvent extends HomeEvent {
 // ignore: must_be_immutable
 class HomeAddTaskEvent extends HomeEvent {
   TaskModel taskModel;
-  HomeAddTaskEvent(this.taskModel);
+  ListModel listModel;
+  HomeAddTaskEvent(this.taskModel, this.listModel);
 }
 
 // ignore: must_be_immutable
 class HomeUpdateTaskEvent extends HomeEvent {
   int index;
   TaskModel updatedTask;
-  HomeUpdateTaskEvent(this.index, this.updatedTask);
+  ListModel listModel;
+  HomeUpdateTaskEvent(this.index, this.updatedTask, this.listModel);
 }
 
 // ignore: must_be_immutable

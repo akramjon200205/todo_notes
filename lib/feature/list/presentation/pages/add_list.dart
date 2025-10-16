@@ -120,12 +120,13 @@ class _AddListState extends State<AddList> {
                       context.read<ListBloc>().add(
                         AddListEvent(
                           listModel: ListModel(
-                            listController.text,
-                            context.read<ListBloc>().listColor,
+                            color: context.read<ListBloc>().listColor,
+                            name: listController.text,
                           ),
                         ),
                       );
                       listController.clear();
+                      context.read<ListBloc>().add(GetListEvent());
                       Navigator.pop(context); // sahifadan chiqish
                     }
                   },

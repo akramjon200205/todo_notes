@@ -1,35 +1,17 @@
-import 'package:hive/hive.dart';
+import 'package:objectbox/objectbox.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
 
-part 'task_model.g.dart';
+@Entity()
+class TaskModel {
+  int id = 0;
 
-@HiveType(typeId: 0)
-class TaskModel extends HiveObject {
-  @HiveField(0)
   String? textTask;
+  bool isCompleted;
 
-  @HiveField(1)
-  bool? isChecked;
-
-  @HiveField(2)
+  @Property(type: PropertyType.date)
   DateTime? time;
 
-  @HiveField(3)
-  ListModel? listModel;
+  final listModel = ToOne<ListModel>();
 
-  TaskModel({this.isChecked, this.textTask, this.time, this.listModel});
-
-  TaskModel copyWith({
-    String? textTask,
-    bool? isChecked,
-    DateTime? time,
-    ListModel? listModel,
-  }) {
-    return TaskModel(
-      isChecked: isChecked ?? this.isChecked,
-      textTask: textTask ?? this.textTask,
-      time: time ?? this.time,
-      listModel: listModel ?? this.listModel,
-    );
-  }
+  TaskModel({this.textTask, this.isCompleted = false, this.time});
 }

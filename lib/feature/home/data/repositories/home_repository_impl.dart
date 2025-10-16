@@ -3,6 +3,7 @@ import 'package:todo_notes/core/common/errors/failure.dart';
 import 'package:todo_notes/feature/home/data/datasources/home_datasource.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/domain/repositories/home_repository.dart';
+import 'package:todo_notes/feature/list/data/models/list_model.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   final HomeDatasource homeDatasource;
@@ -44,11 +45,11 @@ class HomeRepositoryImpl implements HomeRepository {
     int index,
     TaskModel updatedTask,
   ) async {
-   try {
-  final updateTask = await homeDatasource.updateTask(index, updatedTask);
-  return Right(updateTask);
-   } catch (e) {
-     return Left(UnknownFailure(e.toString()));
-   }
+    try {
+      final updateTask = await homeDatasource.updateTask(index, updatedTask);
+      return Right(updateTask);
+    } catch (e) {
+      return Left(UnknownFailure(e.toString()));
+    }
   }
 }

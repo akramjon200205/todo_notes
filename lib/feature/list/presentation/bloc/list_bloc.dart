@@ -44,7 +44,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     );
     results.fold((l) => emit(ListError(l.message)), (r) {
       listModels[event.index] = r;
-      emit(GetListState(List.from(listModels)));
+      emit(GetListState(listModels));
     });
   }
 
@@ -62,7 +62,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     final result = await listModelRepository.deleteList(event.index);
     result.fold((l) => emit(ListError(l.message)), (r) {
       listModels.removeAt(event.index);
-      emit(GetListState(List.from(listModels)));
+      emit(GetListState(listModels));
     });
   }
 }

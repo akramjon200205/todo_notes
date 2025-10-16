@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
-import 'package:todo_notes/core/hive_box/hive_box.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/app_bar_task.dart';
@@ -46,7 +44,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    Hive.box(HiveBoxes.taskBox).close();
     _controller.dispose();
     super.dispose();
   }

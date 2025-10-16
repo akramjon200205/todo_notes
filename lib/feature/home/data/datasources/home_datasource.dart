@@ -1,5 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todo_notes/core/hive_box/hive_box.dart';
+import 'package:objectbox/objectbox.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 
 abstract class HomeDatasource {
@@ -10,48 +9,43 @@ abstract class HomeDatasource {
 }
 
 class HomeDatasourceImpl implements HomeDatasource {
+  final Store store;
+
+  HomeDatasourceImpl(this.store);
+
   @override
   Future<void> addTask(TaskModel task) async {
-    final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
-      HiveBoxes.taskBox,
-    );
-
-    await taskBox.add(task);
-    
-    await taskBox.close();
+    final box = store.box<TaskModel>();
+    box.put(task); // id=0 bo'lsa yangi yozuv sifatida saqlanadi
   }
 
   @override
   Future<void> deleteTask(int index) async {
-    final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
-      HiveBoxes.taskBox,
-    );
-
-    await taskBox.deleteAt(index);
-    await taskBox.close();
+    final box = store.box<TaskModel>();
+    final allTasks = box.getAll();
+    if (index >= 0 && index < allTasks.length) {
+      box.remove(allTasks[index].id);
+    }
   }
 
   @override
   Future<List<TaskModel>> getAllTAsks() async {
-    final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
-      HiveBoxes.taskBox,
-    );
-
-    final getAllTasks = taskBox.values.toList();
-    await taskBox.close();
-    return getAllTasks;
+    final box = store.box<TaskModel>();
+    return box.getAll();
   }
 
   @override
   Future<TaskModel> updateTask(int index, TaskModel updatedTask) async {
-    final Box<TaskModel> taskBox = await Hive.openBox<TaskModel>(
-      HiveBoxes.taskBox,
-    );
-    await taskBox.putAt(index, updatedTask);
-    final updated = taskBox.getAt(index)!;
+    final box = store.box<TaskModel>();
+    final allTasks = box.getAll();
 
-    await taskBox.close();
+    if (index >= 0 && index < allTasks.length) {
+      final existing = allTasks[index];
+      updatedTask.id = existing.id; // mavjud yozuvni yangilash uchun
+      box.put(updatedTask);
+      return updatedTask;
+    }
 
-    return updated;
+    throw Exception("Invalid index: $index");
   }
 }

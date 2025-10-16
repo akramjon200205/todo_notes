@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
-import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/tasks_widget.dart';
 
@@ -36,14 +35,12 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return TaskItemTile(
-              isChecked:
-                  context.read<HomeBloc>().taskList[index].isChecked ?? false,
+              isChecked: context.read<HomeBloc>().taskList[index].isCompleted,
               onTap: () {
                 context.read<HomeBloc>().add(
                   OnTaskIsCheckedEvent(
                     index,
-                    !(context.read<HomeBloc>().taskList[index].isChecked ??
-                        false),
+                    !(context.read<HomeBloc>().taskList[index].isCompleted),
                   ),
                 );
               },

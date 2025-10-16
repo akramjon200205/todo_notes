@@ -37,8 +37,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(HomeLoading());
     TaskModel taskModel = taskList[event.index];
     TaskModel isChecked = TaskModel(
-      isChecked: event.isChecked,
-      listModel: taskModel.listModel,
+      isCompleted: event.isChecked,
       textTask: taskModel.textTask,
       time: taskModel.time,
     );
@@ -68,13 +67,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     result.fold((failure) => emit(HomeError(failure.message)), (tasks) {
       taskList = tasks;
 
-      for (var task in taskList) {
-        final type = task.listModel?.name ?? 'unknown';
+      // for (var task in taskList) {
+      //   final type = task.listModel.name ?? 'unknown';
 
-        groupedByType.putIfAbsent(type, () => []);
+      //   groupedByType.putIfAbsent(type, () => []);
 
-        groupedByType[type]!.add(task);
-      }
+      //   groupedByType[type]!.add(task);
+      // }
       emit(
         HomeGetAllTasks(taskModelList: taskList, groupedByType: groupedByType),
       );
@@ -92,12 +91,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _tempTime?.hour ?? DateTime.now().hour,
       _tempTime?.minute ?? DateTime.now().minute,
     );
+    final ListModel listModel = event.listModel;
     TaskModel task = TaskModel(
-      isChecked: false,
-      listModel: _listModel,
+      isCompleted: false,      
       textTask: _tempText,
       time: combinedDateTime,
     );
+    task.listModel.target = listModel;
     final result = await repository.addTasks(task);
     result.fold((failure) => emit(HomeError(failure.message)), (newTask) {
       taskList.add(newTask);
@@ -109,6 +109,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeUpdateTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
+    final TaskModel updatedTask = event.updatedTask;
+    updatedTask.listModel.target = event.listModel;
     final result = await repository.updateTasks(event.index, event.updatedTask);
     result.fold((failure) => emit(HomeError(failure.message)), (updatedTask) {
       taskList[event.index] = updatedTask;

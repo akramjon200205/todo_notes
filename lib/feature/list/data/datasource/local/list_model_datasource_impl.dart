@@ -1,46 +1,45 @@
-import 'dart:developer';
-
-import 'package:hive/hive.dart';
-import 'package:todo_notes/core/hive_box/hive_box.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
 import 'package:todo_notes/feature/list/domain/data/local/list_model_datasource.dart';
+import 'package:objectbox/objectbox.dart';
 
 class ListModelDatasourceImpl implements ListModelDatasource {
+  final Store store;
+
+  ListModelDatasourceImpl(this.store);
+
   @override
   Future<void> addList(ListModel listModel) async {
-    final Box<ListModel> listBox = await Hive.openBox<ListModel>(
-      HiveBoxes.listBox,
-    );
-    log(listModel.name ?? '');
-
-    await listBox.add(listModel);
-    log(listBox.values.toString());
+    final box = store.box<ListModel>();
+    box.put(listModel); // id = 0 bo‘lsa yangi yozuv
   }
 
   @override
   Future<void> deleteListModel(int index) async {
-    final Box<ListModel> listBox = await Hive.openBox<ListModel>(
-      HiveBoxes.listBox,
-    );
-    await listBox.deleteAt(index);
+    final box = store.box<ListModel>();
+    final list = box.getAll();
+    if (index >= 0 && index < list.length) {
+      box.remove(list[index].id);
+    }
   }
 
   @override
   Future<List<ListModel>> getAllListModel() async {
-    final Box<ListModel> listBox = await Hive.openBox<ListModel>(
-      HiveBoxes.listBox,
-    );
-    final listModel = listBox.values.toList();
-    log(listModel.toString());
-    return listModel;
+    final box = store.box<ListModel>();
+    return box.getAll();
   }
 
   @override
   Future<ListModel> updateListModel(int index, ListModel listModel) async {
-    final Box<ListModel> listBox = await Hive.openBox<ListModel>(
-      HiveBoxes.listBox,
-    );
-    await listBox.putAt(index, listModel);
-    return listBox.getAt(index)!;
+    final box = store.box<ListModel>();
+    final list = box.getAll();
+
+    if (index >= 0 && index < list.length) {
+      final existing = list[index];
+      listModel.id = existing.id; // mavjud yozuvni yangilash uchun
+      box.put(listModel);
+      return listModel;
+    }
+
+    throw Exception("Invalid index: $index");
   }
 }
