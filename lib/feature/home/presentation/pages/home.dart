@@ -84,6 +84,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       AppBarTask(),
                       const SizedBox(height: 20),
                       const TasksBuilderWidget(),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 10,
+                          top: 10,
+                          left: 20,
+                          right: 20,
+                        ),
+                        child: Divider(
+                          height: 1,
+                          color: Colors.grey.shade300,
+                          indent: 30,
+                          endIndent: 0,
+                        ),
+                      ),
                       const ListsBuilderWidget(),
                       const SizedBox(height: 120),
                     ],
@@ -91,7 +105,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
                 if (_isOpened)
                   BackdropFilterWidget(fadeAnimation: _fadeAnimation),
-
                 Align(
                   alignment: const Alignment(0.9, 0.85),
                   child: AnimatedBuilder(

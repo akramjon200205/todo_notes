@@ -11,7 +11,7 @@ class TaskCalendar extends StatefulWidget {
 }
 
 class _TaskCalendarState extends State<TaskCalendar> {
-  DateTime _focusedDay = DateTime.now();
+  DateTime? _focusedDay;
   DateTime? _selectedDay;
 
   // Tasklar ro'yxati: sana -> rangli nuqtalar
@@ -30,7 +30,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
     return TableCalendar(
       firstDay: DateTime.utc(2020, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: _focusedDay,
+      focusedDay: _focusedDay ?? DateTime.now(),
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
@@ -38,6 +38,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
           _focusedDay = focusedDay;
         });
         context.read<HomeBloc>().add(OnChangeDateEvent(selectedDay));
+        context.read<HomeBloc>().add(HomeGetAllTasksEvent());
       },
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(

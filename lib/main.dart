@@ -6,6 +6,7 @@ import 'package:todo_notes/core/di/dependency_injection.dart' as sl;
 import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 import 'package:todo_notes/objectbox.g.dart';
 late final Store store;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();   
   await sl.init();

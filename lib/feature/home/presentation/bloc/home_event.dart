@@ -14,7 +14,7 @@ class HomeGetAllTasksEvent extends HomeEvent {
 // ignore: must_be_immutable
 class HomeAddTaskEvent extends HomeEvent {
   TaskModel taskModel;
-  ListModel listModel;
+  ListModel? listModel;
   HomeAddTaskEvent(this.taskModel, this.listModel);
 }
 
@@ -36,6 +36,11 @@ class OnChangeTimeEvent extends HomeEvent {
 class OnChangeDateEvent extends HomeEvent {
   DateTime date;
   OnChangeDateEvent(this.date);
+}
+// ignore: must_be_immutable
+class OnChangeListEvent extends HomeEvent {
+  ListModel listModel;
+  OnChangeListEvent(this.listModel);
 }
 
 // ignore: must_be_immutable

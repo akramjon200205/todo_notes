@@ -10,7 +10,6 @@ class TaskModel {
 
   @Property(type: PropertyType.date)
   DateTime? time;
-
   final listModel = ToOne<ListModel>();
 
   TaskModel({this.textTask, this.isCompleted = false, this.time});

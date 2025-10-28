@@ -16,7 +16,7 @@ class HomeDatasourceImpl implements HomeDatasource {
   @override
   Future<void> addTask(TaskModel task) async {
     final box = store.box<TaskModel>();
-    box.put(task); // id=0 bo'lsa yangi yozuv sifatida saqlanadi
+    box.put(task); 
   }
 
   @override

@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// Cupertino style hour:minute picker that visually matches iOS look:
-/// - two thin horizontal lines in center (selection zone)
-/// - selected item is darker & larger
-/// - fallback overlay if selectionOverlay not applied on some Flutter versions
 class CupertinoTimePickerStyled extends StatefulWidget {
   final TimeOfDay initialTime;
   final ValueChanged<TimeOfDay> onTimeChanged;
+  final VoidCallback? onCancel;
+  final VoidCallback? onDone;
 
   const CupertinoTimePickerStyled({
     super.key,
     required this.initialTime,
     required this.onTimeChanged,
+    this.onCancel,
+    this.onDone,
   });
 
   @override
@@ -26,6 +26,7 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
 
   static const double _itemExtent = 44.0;
   static const int _visibleItems = 5;
+
   final FixedExtentScrollController _hourController =
       FixedExtentScrollController();
   final FixedExtentScrollController _minuteController =
@@ -36,7 +37,6 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
     super.initState();
     selectedHour = widget.initialTime.hour;
     selectedMinute = widget.initialTime.minute;
-    // jumpToItem after first frame to avoid controller errors
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _hourController.jumpToItem(selectedHour);
       _minuteController.jumpToItem(selectedMinute);
@@ -50,12 +50,11 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
     super.dispose();
   }
 
-  void _onChanged() {
+  void _emitTimeChange() {
     widget.onTimeChanged(TimeOfDay(hour: selectedHour, minute: selectedMinute));
   }
 
   TextStyle _styleFor(bool selected, BuildContext context) {
-    // selected - bold and darker; others - faded gray
     return TextStyle(
       fontSize: selected ? 22 : 18,
       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
@@ -75,7 +74,6 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
     return Expanded(
       child: CupertinoPicker(
         backgroundColor: CupertinoColors.systemGroupedBackground,
-        // Selection overlay (works on modern Flutter)
         selectionOverlay: CupertinoPickerDefaultSelectionOverlay(
           background: CupertinoColors.systemBackground.withOpacity(0.0),
         ),
@@ -87,16 +85,12 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
           setState(() {
             onChanged(i);
           });
-          _onChanged();
+          _emitTimeChange();
         },
         children: List<Widget>.generate(count, (i) {
           final selected = i == selectedIndex;
           return Center(
-            child: Builder(
-              builder: (context) {
-                return Text(display(i), style: _styleFor(selected, context));
-              },
-            ),
+            child: Text(display(i), style: _styleFor(selected, context)),
           );
         }),
       ),
@@ -105,80 +99,95 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
 
   @override
   Widget build(BuildContext context) {
-    // total height = itemExtent * visibleItems
     final double totalHeight = _itemExtent * _visibleItems;
 
     return Container(
-      height: totalHeight,
       color: CupertinoColors.systemGroupedBackground,
-      child: Stack(
+      height: totalHeight + 60,
+      child: Column(
         children: [
-          // Row with two pickers
-          Row(
-            children: [
-              _buildPickerColumn(
-                controller: _hourController,
-                count: 24,
-                selectedIndex: selectedHour,
-                onChanged: (v) => selectedHour = v,
-                display: (i) => i.toString().padLeft(2, '0'),
-              ),
-              // colon
-              // SizedBox(
-              //   width: 28,
-              //   child: Center(
-              //     child: Text(':',
-              //         style: TextStyle(
-              //             fontSize: 22,
-              //             color: CupertinoColors.label.resolveFrom(context),
-              //             fontWeight: FontWeight.bold)),
-              //   ),
-              // ),
-              _buildPickerColumn(
-                controller: _minuteController,
-                count: 60,
-                selectedIndex: selectedMinute,
-                onChanged: (v) => selectedMinute = v,
-                display: (i) => i.toString().padLeft(2, '0'),
-              ),
-            ],
-          ),
-
-          // Custom selection overlay (fallback & visual separator lines)
-          // Center a transparent container with top & bottom borders
-          Center(
-            child: IgnorePointer(
-              ignoring: true,
-              child: Container(
-                height: _itemExtent,
-                decoration: BoxDecoration(
-                  // Transparent fill so underlying picker shows
-                  color: Colors.transparent,
-                  border: Border(
-                    top: BorderSide(
-                      color: CupertinoColors.inactiveGray.withOpacity(0.35),
-                      width: 1.0,
-                    ),
-                    bottom: BorderSide(
-                      color: CupertinoColors.inactiveGray.withOpacity(0.35),
-                      width: 1.0,
+          Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            color: CupertinoColors.systemGroupedBackground,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: widget.onCancel,
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: CupertinoColors.systemBlue,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    widget.onDone?.call();
+                    _emitTimeChange();
+                  },
+                  child: const Text(
+                    "Done",
+                    style: TextStyle(
+                      color: CupertinoColors.systemBlue,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
-          // Optional faint overlay to slightly highlight selection strip background
-          // (uncomment if you want a subtle background color behind selected row)
-          /*
-          Center(
-            child: Container(
-              height: _itemExtent,
-              color: CupertinoColors.systemGrey.withOpacity(0.03),
+          Expanded(
+            child: Stack(
+              children: [
+                Row(
+                  children: [
+                    _buildPickerColumn(
+                      controller: _hourController,
+                      count: 24,
+                      selectedIndex: selectedHour,
+                      onChanged: (v) => selectedHour = v,
+                      display: (i) => i.toString().padLeft(2, '0'),
+                    ),
+                    _buildPickerColumn(
+                      controller: _minuteController,
+                      count: 60,
+                      selectedIndex: selectedMinute,
+                      onChanged: (v) => selectedMinute = v,
+                      display: (i) => i.toString().padLeft(2, '0'),
+                    ),
+                  ],
+                ),
+                Center(
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Container(
+                      height: _itemExtent,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: CupertinoColors.inactiveGray.withOpacity(
+                              0.35,
+                            ),
+                            width: 1.0,
+                          ),
+                          bottom: BorderSide(
+                            color: CupertinoColors.inactiveGray.withOpacity(
+                              0.35,
+                            ),
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          */
         ],
       ),
     );

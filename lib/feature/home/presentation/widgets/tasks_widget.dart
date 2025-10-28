@@ -50,36 +50,35 @@ class TaskItemTile extends StatelessWidget {
                           : null,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(title, style: AppTextStyles.taskText),
-                          if (time != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.access_time,
-                                    size: 14,
-                                    color: Colors.grey,
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title, style: AppTextStyles.taskText),
+                        if (time != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: 14,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  time!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade600,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    time!,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
-
+                    Spacer(),
                     Container(
                       width: 10,
                       height: 10,
@@ -93,15 +92,6 @@ class TaskItemTile extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(bottom: 10, top: 10, left: 20),
-          child: Divider(
-            height: 1,
-            color: Colors.grey.shade300,
-            indent: 30,
-            endIndent: 0,
           ),
         ),
       ],

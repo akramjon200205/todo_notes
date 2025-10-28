@@ -3,7 +3,6 @@ import 'package:todo_notes/core/common/errors/failure.dart';
 import 'package:todo_notes/feature/home/data/datasources/home_datasource.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/domain/repositories/home_repository.dart';
-import 'package:todo_notes/feature/list/data/models/list_model.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   final HomeDatasource homeDatasource;
