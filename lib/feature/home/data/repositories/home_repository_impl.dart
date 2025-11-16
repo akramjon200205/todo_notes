@@ -20,9 +20,9 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> deleteTasks(int index) async {
+  Future<Either<Failure, dynamic>> deleteTasks(String key) async {
     try {
-      await homeDatasource.deleteTask(index);
+      await homeDatasource.deleteTask(key);
       return Right("delete task");
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
@@ -30,9 +30,9 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, List<TaskModel>>> getAllTasks() async {
+  Future<Either<Failure, List< TaskModel>>> getAllTasks() async {
     try {
-      final tasks = await homeDatasource.getAllTAsks();
+      final tasks = await homeDatasource.getAllTasks();
       return Right(tasks);
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
@@ -41,12 +41,12 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<Either<Failure, TaskModel>> updateTasks(
-    int index,
+    String key,
     TaskModel updatedTask,
   ) async {
     try {
-      final updateTask = await homeDatasource.updateTask(index, updatedTask);
-      return Right(updateTask);
+      await homeDatasource.updateTask(key, updatedTask);
+      return Right(updatedTask);
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
     }

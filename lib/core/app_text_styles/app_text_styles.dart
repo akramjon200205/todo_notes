@@ -52,6 +52,12 @@ class AppTextStyles {
     size: 14,
   );
 
+  static TextStyle listName = s(
+    color: AppColors.black,
+    weight: FontWeight.w700,
+    size: 32,
+  );
+
   static TextStyle s({
     double size = 14,
     FontWeight weight = FontWeight.normal,

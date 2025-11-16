@@ -35,7 +35,7 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
             final task = contextState.taskList[index];
 
             return Slidable(
-              key: ValueKey(task.id),
+              key: ValueKey(task.key),
               endActionPane: ActionPane(
                 motion: const DrawerMotion(),
                 extentRatio: 0.25,
@@ -47,7 +47,7 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
                         builder: (ctx) => AlertDialog(
                           title: const Text("Confirmation"),
                           content: Text(
-                            "Do you want to delete this task named ${task.textTask}?",
+                            "Do you want to delete this task named ${task.text}?",
                           ),
                           actions: [
                             TextButton(
@@ -63,9 +63,14 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
                       );
 
                       if (confirm == true) {
-                        contextState.add(HomeDeleteTaskEvent(index));                     
-                        contextState.add(HomeGetAllTasksEvent());
+                        contextState.add(
+                          HomeDeleteTaskEvent(
+                            index: index,
+                            key: task.key ?? '',
+                          ),
+                        );
                       }
+                      setState(() {});
                     },
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
@@ -79,11 +84,15 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
                 isChecked: task.isCompleted,
                 onTap: () {
                   contextState.add(
-                    OnTaskIsCheckedEvent(index, !(task.isCompleted)),
+                    OnTaskIsCheckedEvent(
+                      index: index,
+                      isChecked: !(task.isCompleted),
+                      key: task.key ?? '',
+                    ),
                   );
                 },
-                title: task.textTask ?? '',
-                indicatorColor: task.listModel.target?.color ?? Colors.white,
+                title: task.text,
+                indicatorColor: task.listModel.color,
                 time: formatDate(task.time ?? DateTime.now()),
               ),
             );

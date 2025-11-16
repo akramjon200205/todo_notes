@@ -19,9 +19,9 @@ class ListModelRepositoryImpl implements ListModelRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> deleteList(int index) async {
+  Future<Either<Failure, bool>> deleteList(String key) async {
     try {
-      await listModelDatasource.deleteListModel(index);
+      await listModelDatasource.deleteListModel(key);
       return const Right(true);
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
@@ -40,15 +40,15 @@ class ListModelRepositoryImpl implements ListModelRepository {
 
   @override
   Future<Either<Failure, ListModel>> updateList(
-    int index,
+    String key,
     ListModel updateList,
   ) async {
     try {
-      final updatedList = await listModelDatasource.updateListModel(
-        index,
+      await listModelDatasource.updateListModel(
+        key,
         updateList,
       );
-      return Right(updatedList);
+      return Right(updateList);
     } catch (e) {
       return Left(UnknownFailure(e.toString()));
     }

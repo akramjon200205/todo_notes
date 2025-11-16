@@ -4,21 +4,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/domain/repositories/home_repository.dart';
+import 'package:todo_notes/feature/list/domain/repository/list_model_repository.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepository repository;
+  final ListModelRepository listModelRepository;
 
   List<TaskModel> taskList = [];
-  Map<String, List<TaskModel>> groupedByType = {};
-
   DateTime? tempDate;
   TimeOfDay? tempTime;
-  ListModel? listModels;
+  ListModel? selectedList;
 
-  HomeBloc(this.repository) : super(HomeInitial()) {
+  HomeBloc(this.repository, this.listModelRepository) : super(HomeInitial()) {
     on<HomeGetAllTasksEvent>(_onGetAllTasks);
     on<HomeAddTaskEvent>(_onAddTask);
     on<HomeUpdateTaskEvent>(_onUpdateTask);
@@ -28,33 +28,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnChangeTextEvent>(_onChangeText);
     on<OnTaskIsCheckedEvent>(_onChangeTaskIsChecked);
     on<OnChangeListEvent>(_onChangeListEvent);
-  }
 
-  Future<void> _onChangeTaskIsChecked(
-    OnTaskIsCheckedEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    emit(HomeLoading());
-    TaskModel taskModel = taskList[event.index];
-
-    TaskModel isChecked = TaskModel(
-      isCompleted: event.isChecked,
-      textTask: taskModel.textTask,
-      time: taskModel.time,
-    );
-    isChecked.listModel.target = taskList[event.index].listModel.target;
-    taskList[event.index] = isChecked;
-    await repository.updateTasks(event.index, isChecked);
-    emit(HomeUpdateTasks());
+    add(HomeGetAllTasksEvent());
   }
 
   void _onChangeListEvent(OnChangeListEvent event, Emitter<HomeState> emit) {
-    listModels = event.listModel;
+    selectedList = event.listModel;
   }
 
-  void _onChangeText(OnChangeTextEvent event, Emitter<HomeState> emit) {
-    // _tempText = event.text;
-  }
+  void _onChangeText(OnChangeTextEvent event, Emitter<HomeState> emit) {}
 
   void _onChangeDate(OnChangeDateEvent event, Emitter<HomeState> emit) {
     tempDate = event.date;
@@ -69,10 +51,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(HomeLoading());
+
     final result = await repository.getAllTasks();
-    result.fold((failure) => emit(HomeError(failure.message)), (tasks) {
-      taskList = tasks;
-      emit(HomeGetAllTasks(taskModelList: tasks, groupedByType: groupedByType));
+
+    result.fold((error) => emit(HomeError(error.message)), (allTasks) {
+      taskList = allTasks;
+      emit(HomeGetAllTasks(taskModelList: taskList));
     });
   }
 
@@ -80,43 +64,59 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeAddTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
-    final ListModel? listModel = listModels;
-    TaskModel task = TaskModel(
-      isCompleted: event.taskModel.isCompleted,
-      textTask: event.taskModel.textTask,
-      time: event.taskModel.time,
-    );
-    task.listModel.target = listModel;
-    final result = await repository.addTasks(task);
-    result.fold((failure) => emit(HomeError(failure.message)), (newTask) {
-      taskList.add(newTask);
-      taskList.sort((a, b) => a.time!.compareTo(b.time!));
-      emit(HomeAddTasks());
-    });
+    if (selectedList == null) {
+      emit(HomeError("List tanlanmagan"));
+      return;
+    }
+
+    await repository.addTasks(event.taskModel);
+    emit(HomeAddTasks());
   }
 
   Future<void> _onUpdateTask(
     HomeUpdateTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
-    final TaskModel updatedTask = event.updatedTask;
-    updatedTask.listModel.target = event.listModel;
-    final result = await repository.updateTasks(event.index, event.updatedTask);
-    result.fold((failure) => emit(HomeError(failure.message)), (updatedTask) {
-      taskList[event.index] = updatedTask;
-      taskList.sort((a, b) => a.time!.compareTo(b.time!));
-      emit(HomeUpdateTasks());
-    });
+    final task = event.updatedTask;
+
+    await repository.updateTasks(event.key, task);
+    emit(HomeUpdateTasks());
   }
 
   Future<void> _onDeleteTask(
     HomeDeleteTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
-    final result = await repository.deleteTasks(event.index);
+    final result = await repository.deleteTasks(event.key);
+
+    result.fold((l) => emit(HomeError(l.message)), (r) {
+      if (event.index >= 0 && event.index < taskList.length) {
+        taskList.removeAt(event.index);
+      }
+      emit(HomeGetAllTasks(taskModelList: [...taskList]));
+    });
+  }
+
+  Future<void> _onChangeTaskIsChecked(
+    OnTaskIsCheckedEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(HomeLoading());
+
+    final oldTask = taskList[event.index];
+
+    final updated = TaskModel(
+      text: oldTask.text,
+      time: oldTask.time,
+      isCompleted: event.isChecked,
+      listModel: oldTask.listModel,
+    );
+
+    final result = await repository.updateTasks(event.key, updated);
+
     result.fold((failure) => emit(HomeError(failure.message)), (_) {
-      taskList.removeAt(event.index);
-      emit(HomeDeleteTasks());
+      taskList[event.index] = updated;
+      emit(HomeUpdateTasks());
     });
   }
 }

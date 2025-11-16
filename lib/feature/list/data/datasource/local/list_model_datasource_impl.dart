@@ -1,45 +1,36 @@
+import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:todo_notes/core/hive_ce_box/hive_ce_box.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
 import 'package:todo_notes/feature/list/domain/data/local/list_model_datasource.dart';
-import 'package:objectbox/objectbox.dart';
 
 class ListModelDatasourceImpl implements ListModelDatasource {
-  final Store store;
+  ListModelDatasourceImpl();
 
-  ListModelDatasourceImpl(this.store);
-
+  Box<ListModel> get box => Hive.box<ListModel>(HiveCeBox.listBox);
   @override
   Future<void> addList(ListModel listModel) async {
-    final box = store.box<ListModel>();
-    box.put(listModel); // id = 0 bo‘lsa yangi yozuv
+    final key = DateTime.now().millisecondsSinceEpoch.toString();
+    final list = ListModel(
+      name: listModel.name,
+      color: listModel.color,
+      key: key,
+    );
+
+    box.put(key, list); // id = 0 bo‘lsa yangi yozuv
   }
 
   @override
-  Future<void> deleteListModel(int index) async {
-    final box = store.box<ListModel>();
-    final list = box.getAll();
-    if (index >= 0 && index < list.length) {
-      box.remove(list[index].id);
-    }
+  Future<void> deleteListModel(String key) async {
+    await box.delete(key);
   }
 
   @override
   Future<List<ListModel>> getAllListModel() async {
-    final box = store.box<ListModel>();
-    return box.getAll();
+    return box.values.toList();
   }
 
   @override
-  Future<ListModel> updateListModel(int index, ListModel listModel) async {
-    final box = store.box<ListModel>();
-    final list = box.getAll();
-
-    if (index >= 0 && index < list.length) {
-      final existing = list[index];
-      listModel.id = existing.id; // mavjud yozuvni yangilash uchun
-      box.put(listModel);
-      return listModel;
-    }
-
-    throw Exception("Invalid index: $index");
+  Future<void> updateListModel(String key, ListModel listModel) async {
+    await box.put(key, listModel);
   }
 }

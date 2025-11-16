@@ -16,6 +16,7 @@ class _ListsWidgetState extends State<ListsBuilderWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<ListBloc, ListState>(
       builder: (context, state) {
+        final contextBloc = context.read<ListBloc>().listModels;
         return Padding(
           padding: EdgeInsets.only(left: 50, right: 16),
           child: Column(
@@ -30,16 +31,18 @@ class _ListsWidgetState extends State<ListsBuilderWidget> {
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
+                  final list = contextBloc[index];
+
                   return ListsWidget(
-                    name: context.read<ListBloc>().listModels[index].name ?? '',
+                    name: list.name,
                     countTasks: index,
-                    color: context.read<ListBloc>().listModels[index].color,
+                    color: list.color,
                   );
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 10);
                 },
-                itemCount: context.read<ListBloc>().listModels.length,
+                itemCount: contextBloc.length,
               ),
             ],
           ),

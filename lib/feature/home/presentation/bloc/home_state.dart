@@ -14,8 +14,8 @@ class HomeLoading extends HomeState {}
 // ignore: must_be_immutable
 class HomeGetAllTasks extends HomeState {
   List<TaskModel> taskModelList;
-  Map<String, List<TaskModel>> groupedByType;
-  HomeGetAllTasks({required this.taskModelList,required this.groupedByType,});
+  // Map<ListModel, List<TaskModel>> groupedByType;
+  HomeGetAllTasks({required this.taskModelList});
 }
 
 // ignore: must_be_immutable

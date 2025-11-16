@@ -20,6 +20,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     on<GetListEvent>(_onGetListEvent);
     on<DeleteListEvent>(_onDeleteListEvent);
     on<ChangeColorEvent>(_onChangeColorEvent);
+    add(GetListEvent());
   }
 
   Future<void> _onChangeColorEvent(ChangeColorEvent event, Emitter emit) async {
@@ -39,12 +40,12 @@ class ListBloc extends Bloc<ListEvent, ListState> {
   Future<void> _onUpdateListEvent(UpdateListEvent event, Emitter emit) async {
     emit(ListLoading());
     final results = await listModelRepository.updateList(
-      event.index,
+      event.key,
       event.listModel,
     );
     results.fold((l) => emit(ListError(l.message)), (r) {
       listModels[event.index] = r;
-      emit(GetListState(listModels));
+      emit(UpdateListState());
     });
   }
 
@@ -59,10 +60,10 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
   Future<void> _onDeleteListEvent(DeleteListEvent event, Emitter emit) async {
     emit(ListLoading());
-    final result = await listModelRepository.deleteList(event.index);
+    final result = await listModelRepository.deleteList(event.key);
     result.fold((l) => emit(ListError(l.message)), (r) {
       listModels.removeAt(event.index);
-      emit(GetListState(listModels));
+      emit(DeleteListState());
     });
   }
 }

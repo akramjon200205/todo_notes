@@ -41,9 +41,9 @@ class _TasksState extends State<Tasks> {
                             text: "Cancel",
                             function: () {
                               controller.clear();
-                              context.read<HomeBloc>().tempDate = null;
-                              context.read<HomeBloc>().tempTime = null;
-                              context.read<HomeBloc>().listModels = null;
+                              context0.tempDate = null;
+                              context0.tempTime = null;
+                              context0.selectedList = null;
 
                               Navigator.pop(context);
                             },
@@ -60,24 +60,20 @@ class _TasksState extends State<Tasks> {
                                 context0.tempTime?.minute ??
                                     DateTime.now().minute,
                               );
-                              if (context0.listModels != null &&
+
+                              if (context0.selectedList != null &&
                                   controller.text.isNotEmpty &&
                                   context0.tempDate != null) {
-                                context0.add(
-                                  HomeAddTaskEvent(
-                                    TaskModel(
-                                      isCompleted: false,
-                                      textTask: controller.text,
-                                      time: combinedDateTime,
-                                    ),
-                                    context0.listModels,
-                                  ),
+                                // Task yaratib list bilan bog'lash
+                                final task = TaskModel(
+                                  isCompleted: false,
+                                  text: controller.text,
+                                  time: combinedDateTime,
+                                  listModel: context0.selectedList!,
                                 );
 
+                                context0.add(HomeAddTaskEvent(task));
                                 context0.add(HomeGetAllTasksEvent());
-                                context.read<HomeBloc>().tempDate = null;
-                                context.read<HomeBloc>().tempTime = null;
-                                context.read<HomeBloc>().listModels = null;
 
                                 Navigator.pop(context);
                               }

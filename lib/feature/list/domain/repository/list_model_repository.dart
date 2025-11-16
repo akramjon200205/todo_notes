@@ -6,8 +6,8 @@ abstract class ListModelRepository {
   Future<Either<Failure, List<ListModel>>> getAllLists();
   Future<Either<Failure, ListModel>> addList(ListModel listModel);
   Future<Either<Failure, ListModel>> updateList(
-    int index,
+    String key,
     ListModel updateList,
   );
-  Future<Either<Failure, bool>> deleteList(int index);
+  Future<Either<Failure, bool>> deleteList(String key);
 }

@@ -21,26 +21,25 @@ class CupertinoTimePickerStyled extends StatefulWidget {
 }
 
 class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
+  late FixedExtentScrollController _hourController;
+  late FixedExtentScrollController _minuteController;
+
   late int selectedHour;
   late int selectedMinute;
 
   static const double _itemExtent = 44.0;
   static const int _visibleItems = 5;
 
-  final FixedExtentScrollController _hourController =
-      FixedExtentScrollController();
-  final FixedExtentScrollController _minuteController =
-      FixedExtentScrollController();
-
   @override
   void initState() {
     super.initState();
     selectedHour = widget.initialTime.hour;
     selectedMinute = widget.initialTime.minute;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _hourController.jumpToItem(selectedHour);
-      _minuteController.jumpToItem(selectedMinute);
-    });
+
+    _hourController = FixedExtentScrollController(initialItem: selectedHour);
+    _minuteController = FixedExtentScrollController(
+      initialItem: selectedMinute,
+    );
   }
 
   @override
@@ -82,24 +81,26 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
         useMagnifier: true,
         magnification: 1.08,
         onSelectedItemChanged: (i) {
-          setState(() {
-            onChanged(i);
-          });
+          onChanged(i);
           _emitTimeChange();
+          setState(() {});
         },
-        children: List<Widget>.generate(count, (i) {
-          final selected = i == selectedIndex;
-          return Center(
-            child: Text(display(i), style: _styleFor(selected, context)),
-          );
-        }),
+        children: List.generate(
+          count,
+          (i) => Center(
+            child: Text(
+              display(i),
+              style: _styleFor(i == selectedIndex, context),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final double totalHeight = _itemExtent * _visibleItems;
+    final totalHeight = _itemExtent * _visibleItems;
 
     return Container(
       color: CupertinoColors.systemGroupedBackground,
@@ -161,9 +162,9 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
                     ),
                   ],
                 ),
+
                 Center(
                   child: IgnorePointer(
-                    ignoring: true,
                     child: Container(
                       height: _itemExtent,
                       decoration: BoxDecoration(
@@ -172,13 +173,13 @@ class _CupertinoTimePickerStyledState extends State<CupertinoTimePickerStyled> {
                             color: CupertinoColors.inactiveGray.withOpacity(
                               0.35,
                             ),
-                            width: 1.0,
+                            width: 1,
                           ),
                           bottom: BorderSide(
                             color: CupertinoColors.inactiveGray.withOpacity(
                               0.35,
                             ),
-                            width: 1.0,
+                            width: 1,
                           ),
                         ),
                       ),

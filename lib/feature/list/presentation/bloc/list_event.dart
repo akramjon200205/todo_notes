@@ -10,20 +10,27 @@ sealed class ListEvent extends Equatable {
 // ignore: must_be_immutable
 class AddListEvent extends ListEvent {
   ListModel listModel;
+
   AddListEvent({required this.listModel});
 }
 
 // ignore: must_be_immutable
 class UpdateListEvent extends ListEvent {
   int index;
+  String key;
   ListModel listModel;
-  UpdateListEvent({required this.index, required this.listModel});
+  UpdateListEvent({
+    required this.index,
+    required this.listModel,
+    required this.key,
+  });
 }
 
 // ignore: must_be_immutable
 class DeleteListEvent extends ListEvent {
   int index;
-  DeleteListEvent(this.index);
+  String key;
+  DeleteListEvent(this.index, this.key);
 }
 
 class GetListEvent extends ListEvent {
@@ -33,5 +40,6 @@ class GetListEvent extends ListEvent {
 // ignore: must_be_immutable
 class ChangeColorEvent extends ListEvent {
   Color changeColor;
+
   ChangeColorEvent(this.changeColor);
 }

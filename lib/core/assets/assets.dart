@@ -17,4 +17,5 @@ String iconList = '$_base/icon_list.png';
 class SvgIcons {
   static const String _base = "assets/icons";
   String person = "$_base/vector.svg";
+  String edit = "$_base/edit_icon.svg";
 }

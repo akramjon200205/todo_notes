@@ -1,51 +1,45 @@
-import 'package:objectbox/objectbox.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:todo_notes/core/hive_ce_box/hive_ce_box.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 
 abstract class HomeDatasource {
-  Future<List<TaskModel>> getAllTAsks();
+  Future<List<TaskModel>> getAllTasks();
   Future<void> addTask(TaskModel task);
-  Future<TaskModel> updateTask(int index, TaskModel updatedTask);
-  Future<void> deleteTask(int index);
+  Future<void> deleteTask(String key);
+  Future<void> updateTask(String key, TaskModel updatedTask);
 }
 
 class HomeDatasourceImpl implements HomeDatasource {
-  final Store store;
+  HomeDatasourceImpl();
 
-  HomeDatasourceImpl(this.store);
+  Box<TaskModel> get box => Hive.box<TaskModel>(HiveCeBox.hiveBox);
 
   @override
   Future<void> addTask(TaskModel task) async {
-    final box = store.box<TaskModel>();
-    box.put(task); 
+    final key = DateTime.now().millisecondsSinceEpoch.toString();
+    final newTask = TaskModel(
+      text: task.text,
+      time: task.time,
+      listModel: task.listModel, // agar ListModel box-da bo'lsa
+      isCompleted: task.isCompleted,
+      key: key,
+    );
+
+    await box.put(key, newTask);
   }
 
   @override
-  Future<void> deleteTask(int index) async {
-    final box = store.box<TaskModel>();
-    final allTasks = box.getAll();
-    if (index >= 0 && index < allTasks.length) {
-      box.remove(allTasks[index].id);
-    }
+  Future<void> deleteTask(String key) async {
+    await box.delete(key);
   }
 
   @override
-  Future<List<TaskModel>> getAllTAsks() async {
-    final box = store.box<TaskModel>();
-    return box.getAll();
+  Future<List<TaskModel>> getAllTasks() async {
+    return box.values.toList();
   }
 
   @override
-  Future<TaskModel> updateTask(int index, TaskModel updatedTask) async {
-    final box = store.box<TaskModel>();
-    final allTasks = box.getAll();
-
-    if (index >= 0 && index < allTasks.length) {
-      final existing = allTasks[index];
-      updatedTask.id = existing.id; // mavjud yozuvni yangilash uchun
-      box.put(updatedTask);
-      return updatedTask;
-    }
-
-    throw Exception("Invalid index: $index");
+  Future<void> updateTask(String key, TaskModel updatedTask) async {
+    await box.put(key, updatedTask);
   }
 }

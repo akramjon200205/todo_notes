@@ -95,7 +95,8 @@ class _TaskTextWidgetState extends State<TaskTextWidget> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color:
-                    context.read<HomeBloc>().listModels?.color ?? Colors.white,
+                    context.read<HomeBloc>().selectedList?.color ??
+                    Colors.white,
               ),
             ),
           ],
