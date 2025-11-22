@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
 
+// ignore: must_be_immutable
 class TaskCalendar extends StatefulWidget {
-  const TaskCalendar({super.key});
-
+  Map<DateTime, List<Color>> tasklist;
+  TaskCalendar({required this.tasklist, super.key});
   @override
   State<TaskCalendar> createState() => _TaskCalendarState();
 }
@@ -14,22 +15,15 @@ class _TaskCalendarState extends State<TaskCalendar> {
   DateTime? _focusedDay;
   DateTime? _selectedDay;
 
-  // Tasklar ro'yxati: sana -> rangli nuqtalar
-  final Map<DateTime, List<Color>> _tasks = {
-    DateTime.utc(2025, 10, 5): [Colors.red, Colors.blue],
-    DateTime.utc(2025, 10, 6): [Colors.green],
-    DateTime.utc(2025, 10, 10): [Colors.purple, Colors.orange, Colors.yellow],
-  };
-
   List<Color> _getEventsForDay(DateTime day) {
-    return _tasks[DateTime.utc(day.year, day.month, day.day)] ?? [];
+    return widget.tasklist[DateTime.utc(day.year, day.month, day.day)] ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
       firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
+      lastDay: DateTime.utc(2035, 12, 31),
       focusedDay: _focusedDay ?? DateTime.now(),
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       onDaySelected: (selectedDay, focusedDay) {
@@ -57,7 +51,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
       calendarBuilders: CalendarBuilders(
         markerBuilder: (context, date, events) {
           final taskColors = _getEventsForDay(date);
-          if (taskColors.isEmpty) return const SizedBox();
+          if (taskColors.isEmpty) return const SizedBox.shrink();
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: taskColors

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
+import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 import 'package:todo_notes/feature/task/presentation/widgets/bottom_bar.dart';
 import 'package:todo_notes/feature/task/presentation/widgets/cancel_done_widget.dart';
 import 'package:todo_notes/feature/task/presentation/widgets/task_text_widget.dart';
@@ -64,7 +65,6 @@ class _TasksState extends State<Tasks> {
                               if (context0.selectedList != null &&
                                   controller.text.isNotEmpty &&
                                   context0.tempDate != null) {
-                                // Task yaratib list bilan bog'lash
                                 final task = TaskModel(
                                   isCompleted: false,
                                   text: controller.text,
@@ -72,9 +72,18 @@ class _TasksState extends State<Tasks> {
                                   listModel: context0.selectedList!,
                                 );
 
-                                context0.add(HomeAddTaskEvent(task));
+                                context0.add(
+                                  HomeAddTaskEvent(
+                                    task,
+                                    context.read<ListBloc>().listModels,
+                                  ),
+                                );
                                 context0.add(HomeGetAllTasksEvent());
-
+                                context0.add(
+                                  ListTasksEvent(
+                                    context.read<ListBloc>().listModels,
+                                  ),
+                                );
                                 Navigator.pop(context);
                               }
                             },

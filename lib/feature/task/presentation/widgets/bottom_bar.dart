@@ -53,7 +53,8 @@ class BottomBarLists extends StatelessWidget {
       child: Row(
         children: [
           InkWell(
-            onTap: () => _showModal(context, const TaskCalendar()),
+            onTap: () =>
+                _showModal(context, TaskCalendar(tasklist: bloc.calendarTasks)),
             borderRadius: BorderRadius.circular(30),
             child: Icon(
               Icons.calendar_today_outlined,

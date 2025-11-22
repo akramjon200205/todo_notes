@@ -53,7 +53,7 @@ class _EditListState extends State<EditList> {
         listener: (context, state) {
           if (state is UpdateListState) {
             context.read<ListBloc>().add(GetListEvent());
-            Navigator.pushReplacementNamed(context, AppRoutes.lists);
+            Navigator.pop(context, AppRoutes.lists);
           }
         },
         child: Padding(

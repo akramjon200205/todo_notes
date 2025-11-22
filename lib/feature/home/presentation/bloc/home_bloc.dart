@@ -17,7 +17,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   DateTime? tempDate;
   TimeOfDay? tempTime;
   ListModel? selectedList;
+  Map<ListModel, List<TaskModel>> listTasks = {};
 
+  Map<DateTime, List<Color>> calendarTasks = {};
   HomeBloc(this.repository, this.listModelRepository) : super(HomeInitial()) {
     on<HomeGetAllTasksEvent>(_onGetAllTasks);
     on<HomeAddTaskEvent>(_onAddTask);
@@ -28,8 +30,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnChangeTextEvent>(_onChangeText);
     on<OnTaskIsCheckedEvent>(_onChangeTaskIsChecked);
     on<OnChangeListEvent>(_onChangeListEvent);
+    on<ListTasksEvent>(_onListTasksEvent);
 
     add(HomeGetAllTasksEvent());
+  }
+
+  void _onListTasksEvent(ListTasksEvent event, Emitter<HomeState> emit) async {
+    emit(HomeLoading());
+    final List<ListModel> lists = event.lists;
+
+    final Map<ListModel, List<TaskModel>> result = {};
+
+    for (var listModel in lists) {
+      final listTasks = taskList.where((task) {
+        return task.listModel.name == listModel.name;
+      }).toList();
+      result[listModel] = listTasks;
+    }
+
+    listTasks = result;
+
+    emit(ListTasksState());
   }
 
   void _onChangeListEvent(OnChangeListEvent event, Emitter<HomeState> emit) {
@@ -56,6 +77,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     result.fold((error) => emit(HomeError(error.message)), (allTasks) {
       taskList = allTasks;
+      taskList.sort((a, b) => a.time!.compareTo(b.time!));
+      calendarTasks = {};
+
+      for (var element in taskList) {
+        final date = DateTime.utc(
+          element.time?.year ?? DateTime.now().year,
+          element.time?.month ?? DateTime.now().month,
+          element.time?.day ?? DateTime.now().day,
+        );
+
+        if (calendarTasks.containsKey(date)) {
+          calendarTasks[date]!.add(element.listModel.color);
+        } else {
+          calendarTasks[date] = [element.listModel.color];
+        }
+      }
+
       emit(HomeGetAllTasks(taskModelList: taskList));
     });
   }
@@ -64,19 +102,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeAddTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
+    emit(HomeLoading());
     if (selectedList == null) {
       emit(HomeError("List tanlanmagan"));
       return;
     }
 
     await repository.addTasks(event.taskModel);
+
+    add(ListTasksEvent(event.listModels));
     emit(HomeAddTasks());
+    tempDate = null;
+    tempTime = null;
+    selectedList = null;
   }
 
   Future<void> _onUpdateTask(
     HomeUpdateTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
+    emit(HomeLoading());
     final task = event.updatedTask;
 
     await repository.updateTasks(event.key, task);
@@ -87,12 +132,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeDeleteTaskEvent event,
     Emitter<HomeState> emit,
   ) async {
+    emit(HomeLoading());
     final result = await repository.deleteTasks(event.key);
 
     result.fold((l) => emit(HomeError(l.message)), (r) {
       if (event.index >= 0 && event.index < taskList.length) {
         taskList.removeAt(event.index);
+        calendarTasks = {};
+
+        for (var element in taskList) {
+          final date = DateTime.utc(
+            element.time?.year ?? DateTime.now().year,
+            element.time?.month ?? DateTime.now().month,
+            element.time?.day ?? DateTime.now().day,
+          );
+
+          if (calendarTasks.containsKey(date)) {
+            calendarTasks[date]!.add(element.listModel.color);
+          } else {
+            calendarTasks[date] = [element.listModel.color];
+          }
+        }
       }
+      add(ListTasksEvent(event.listModels));
       emit(HomeGetAllTasks(taskModelList: [...taskList]));
     });
   }
@@ -106,6 +168,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final oldTask = taskList[event.index];
 
     final updated = TaskModel(
+      key: oldTask.key,
       text: oldTask.text,
       time: oldTask.time,
       isCompleted: event.isChecked,
@@ -116,7 +179,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     result.fold((failure) => emit(HomeError(failure.message)), (_) {
       taskList[event.index] = updated;
-      emit(HomeUpdateTasks());
+      emit(HomeGetAllTasks(taskModelList: taskList));
     });
   }
 }

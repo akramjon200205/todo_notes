@@ -14,8 +14,8 @@ class HomeGetAllTasksEvent extends HomeEvent {
 // ignore: must_be_immutable
 class HomeAddTaskEvent extends HomeEvent {
   TaskModel taskModel;
-
-  HomeAddTaskEvent(this.taskModel);
+  List<ListModel> listModels;
+  HomeAddTaskEvent(this.taskModel, this.listModels);
 }
 
 // ignore: must_be_immutable
@@ -23,7 +23,9 @@ class HomeUpdateTaskEvent extends HomeEvent {
   int index;
   String key;
   TaskModel updatedTask;
-  HomeUpdateTaskEvent(this.index, this.updatedTask, this.key);
+  List<ListModel> listModels;
+
+  HomeUpdateTaskEvent(this.index, this.updatedTask, this.key, this.listModels);
 }
 
 // ignore: must_be_immutable
@@ -54,7 +56,12 @@ class OnChangeTextEvent extends HomeEvent {
 class HomeDeleteTaskEvent extends HomeEvent {
   int index;
   String key;
-  HomeDeleteTaskEvent({required this.index, required this.key});
+  List<ListModel> listModels;
+  HomeDeleteTaskEvent({
+    required this.index,
+    required this.key,
+    required this.listModels,
+  });
 }
 
 // ignore: must_be_immutable
@@ -67,4 +74,10 @@ class OnTaskIsCheckedEvent extends HomeEvent {
     required this.isChecked,
     required this.key,
   });
+}
+
+// ignore: must_be_immutable
+class ListTasksEvent extends HomeEvent {
+  List<ListModel> lists;
+  ListTasksEvent(this.lists);
 }

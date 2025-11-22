@@ -5,6 +5,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/core/route/routes.dart';
+import 'package:todo_notes/feature/home/data/models/task_model.dart';
+import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/list_widget.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
 import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
@@ -19,15 +21,22 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   late final ListBloc listBloc;
+  late final HomeBloc homeBloc;
 
   @override
   void initState() {
     super.initState();
     listBloc = context.read<ListBloc>();
+    homeBloc = context.read<HomeBloc>();
     listBloc.add(GetListEvent());
   }
 
-  Future<void> _showDeleteDialog(int index, ListModel list) async {
+  Future<void> _showDeleteDialog({
+    required int index,
+    required ListModel list,
+    required List<TaskModel> taskList,
+    required Map<DateTime, List<Color>> calendarTasks,
+  }) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -47,14 +56,32 @@ class _ListPageState extends State<ListPage> {
     );
 
     if (confirm == true) {
-      listBloc.add(DeleteListEvent(index, list.key ?? ''));
+      listBloc.add(
+        DeleteListEvent(
+          index: index,
+          key: list.key ?? '',
+          taskList: taskList,
+          calendarTasks: calendarTasks,
+        ),
+      );
+      homeBloc.add(HomeGetAllTasksEvent());
     }
   }
 
-  void _showBottomSheet(int index, String name, Color color) {
+  void _showBottomSheet(
+    int index,
+    String name,
+    Color color,
+    List<TaskModel> tasklist,
+  ) {
     showCupertinoModalPopup(
       context: context,
-      builder: (_) => BottomSheetList(color: color, name: name, index: index),
+      builder: (_) => BottomSheetList(
+        color: color,
+        name: name,
+        index: index,
+        tasklist: tasklist,
+      ),
     );
   }
 
@@ -97,15 +124,26 @@ class _ListPageState extends State<ListPage> {
               itemBuilder: (_, index) {
                 final listItem = lists[index];
                 return InkWell(
-                  onTap: () =>
-                      _showBottomSheet(index, listItem.name, listItem.color),
+                  onTap: () => _showBottomSheet(
+                    index,
+                    listItem.name,
+                    listItem.color,
+                    context.read<HomeBloc>().listTasks[listItem] ?? [],
+                  ),
                   child: Slidable(
                     key: ValueKey(listItem),
                     endActionPane: ActionPane(
                       motion: const DrawerMotion(),
                       children: [
                         SlidableAction(
-                          onPressed: (_) => _showDeleteDialog(index, listItem),
+                          onPressed: (_) => _showDeleteDialog(
+                            index: index,
+                            list: listItem,
+                            taskList: context.read<HomeBloc>().taskList,
+                            calendarTasks: context
+                                .read<HomeBloc>()
+                                .calendarTasks,
+                          ),
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           icon: Icons.delete,
@@ -116,7 +154,12 @@ class _ListPageState extends State<ListPage> {
                     ),
                     child: ListsWidget(
                       name: listItem.name,
-                      countTasks: index,
+                      countTasks: context
+                          .read<HomeBloc>()
+                          .listTasks
+                          .values
+                          .elementAt(index)
+                          .length,
                       color: listItem.color,
                     ),
                   ),

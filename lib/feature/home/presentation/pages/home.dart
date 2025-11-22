@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
+import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/app_bar_task.dart';
@@ -8,6 +9,7 @@ import 'package:todo_notes/feature/home/presentation/widgets/backdrop_filter_wid
 import 'package:todo_notes/feature/home/presentation/widgets/list_and_task_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/tasks_builder_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/lists_builder_widget.dart';
+import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,7 +24,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
   Map<String, List<TaskModel>> groupedByType = {};
-
+  bool istaskAdd = true;
   @override
   void initState() {
     super.initState();
@@ -63,6 +65,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text("Simpl Tasks", style: AppTextStyles.homeText),
+      ),
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (_, state) {
           if (state is HomeLoading) {
@@ -70,6 +78,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           }
           if (state is HomeError) {
             Center(child: Text('Xatolik: ${state.message}'));
+          }
+          if (context.read<HomeBloc>().taskList.isNotEmpty &&
+              context.read<ListBloc>().listModels.isNotEmpty &&
+              istaskAdd) {
+            context.read<HomeBloc>().add(
+              ListTasksEvent(context.read<ListBloc>().listModels),
+            );
+            istaskAdd = false;
           }
         },
         builder: (context, state) {
@@ -81,9 +97,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppBarTask(),
+                      // AppBarTask(),
                       const SizedBox(height: 20),
-                      const TasksBuilderWidget(),
+                      TasksBuilderWidget(),
                       Padding(
                         padding: EdgeInsets.only(
                           bottom: 10,

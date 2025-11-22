@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todo_notes/core/app_colors/app_colors.dart';
+import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
-import 'package:todo_notes/feature/home/presentation/widgets/tasks_widget.dart';
+import 'package:todo_notes/feature/home/presentation/widgets/slidable_widget.dart';
+import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 
 class TasksBuilderWidget extends StatefulWidget {
   const TasksBuilderWidget({super.key});
@@ -12,89 +14,50 @@ class TasksBuilderWidget extends StatefulWidget {
 }
 
 class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
-  String formatDate(DateTime date) {
-    String year = date.year.toString();
-    String month = date.month.toString().padLeft(2, '0');
-    String day = date.day.toString().padLeft(2, '0');
-    String hour = date.hour.toString().padLeft(2, '0');
-    String minute = date.minute.toString().padLeft(2, '0');
-    return '$year-$month-$day, $hour:$minute';
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        final contextState = context.read<HomeBloc>();
+        final home = context.read<HomeBloc>();
+        final listBloc = context.read<ListBloc>();
+        final tasks = home.taskList;
+        final printedHeaders = <String>{};
 
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: contextState.taskList.length,
+          itemCount: tasks.length,
           itemBuilder: (context, index) {
-            final task = contextState.taskList[index];
-
-            return Slidable(
-              key: ValueKey(task.key),
-              endActionPane: ActionPane(
-                motion: const DrawerMotion(),
-                extentRatio: 0.25,
-                children: [
-                  SlidableAction(
-                    onPressed: (context) async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text("Confirmation"),
-                          content: Text(
-                            "Do you want to delete this task named ${task.text}?",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text("Cancel"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text("Delete"),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm == true) {
-                        contextState.add(
-                          HomeDeleteTaskEvent(
-                            index: index,
-                            key: task.key ?? '',
-                          ),
-                        );
-                      }
-                      setState(() {});
-                    },
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    icon: Icons.delete,
-                    label: 'Delete',
-                  ),
-                ],
-              ),
-
-              child: TaskItemTile(
-                isChecked: task.isCompleted,
-                onTap: () {
-                  contextState.add(
-                    OnTaskIsCheckedEvent(
-                      index: index,
-                      isChecked: !(task.isCompleted),
-                      key: task.key ?? '',
+            final task = tasks[index];
+            final dateLabel = getDateLabel(task.time!);
+            bool showHeader = false;
+            if (!printedHeaders.contains(dateLabel)) {
+              showHeader = true;
+              printedHeaders.add(dateLabel);
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showHeader)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      bottom: 6,
+                      top: 12,
                     ),
-                  );
-                },
-                title: task.text,
-                indicatorColor: task.listModel.color,
-                time: formatDate(task.time ?? DateTime.now()),
-              ),
+                    child: Text(
+                      dateLabel,
+                      style: AppTextStyles.taskText.copyWith(
+                        color: AppColors.grey,
+                      ),
+                    ),
+                  ),
+                SlidableWidget(
+                  index: index,
+                  listModels: listBloc.listModels,
+                  task: task,
+                ),
+              ],
             );
           },
           separatorBuilder: (context, index) {
@@ -110,5 +73,21 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
         );
       },
     );
+  }
+
+  String getDateLabel(DateTime date) {
+    final today = DateTime.now();
+    final yesterday = today.subtract(const Duration(days: 1));
+    final tomorrow = today.add(const Duration(days: 1));
+
+    bool isSameDay(DateTime a, DateTime b) =>
+        a.year == b.year && a.month == b.month && a.day == b.day;
+
+    if (isSameDay(date, today)) return "Today";
+    if (isSameDay(date, yesterday)) return "Yesterday";
+    if (isSameDay(date, tomorrow)) return "Tomorrow";
+
+    if (date.isBefore(yesterday)) return "Past days";
+    return "Future days";
   }
 }

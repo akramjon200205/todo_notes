@@ -8,7 +8,7 @@ class AppTextStyles {
   static TextStyle homeText = s(
     color: AppColors.black,
     weight: FontWeight.w700,
-    size: 41,
+    size: 30,
   );
 
   static TextStyle taskText = s(
@@ -55,7 +55,7 @@ class AppTextStyles {
   static TextStyle listName = s(
     color: AppColors.black,
     weight: FontWeight.w700,
-    size: 32,
+    size: 28,
   );
 
   static TextStyle s({

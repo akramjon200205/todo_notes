@@ -30,7 +30,15 @@ class UpdateListEvent extends ListEvent {
 class DeleteListEvent extends ListEvent {
   int index;
   String key;
-  DeleteListEvent(this.index, this.key);
+  List<TaskModel> taskList;
+
+  Map<DateTime, List<Color>> calendarTasks;
+  DeleteListEvent({
+    required this.index,
+    required this.key,
+    required this.taskList,
+    required this.calendarTasks,
+  });
 }
 
 class GetListEvent extends ListEvent {

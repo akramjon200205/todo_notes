@@ -45,5 +45,5 @@ Future<void> init() async {
   );
 
   di.registerFactory<HomeBloc>(() => HomeBloc(di(), di()));
-  di.registerFactory<ListBloc>(() => ListBloc(di()));
+  di.registerFactory<ListBloc>(() => ListBloc(di(), di()));
 }

@@ -42,3 +42,7 @@ class HomeError extends HomeState {
   @override
   List<Object> get props => [message];
 }
+
+class ListTasksState extends HomeState {
+  const ListTasksState();
+}

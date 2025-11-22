@@ -8,12 +8,13 @@ class AppBarTask extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text("Today", style: AppTextStyles.homeText),
-      trailing: InkWell(
-        onTap: () {},
-        child: Icon(Icons.more_horiz, size: 24, color: AppColors.blue),
-      ),
-      leading: const SizedBox(width: 28, height: 28),
+      
+      title: Text("Simpl Tasks", style: AppTextStyles.homeText, textAlign: TextAlign.center,),
+      // trailing: InkWell(
+      //   onTap: () {},
+      //   child: Icon(Icons.more_horiz, size: 24, color: AppColors.blue),
+      // ),
+      // leading: const SizedBox(width: 28, height: 28),
     );
   }
 }
