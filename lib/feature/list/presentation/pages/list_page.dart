@@ -64,7 +64,6 @@ class _ListPageState extends State<ListPage> {
           calendarTasks: calendarTasks,
         ),
       );
-      homeBloc.add(HomeGetAllTasksEvent());
     }
   }
 
@@ -102,14 +101,20 @@ class _ListPageState extends State<ListPage> {
         ),
       ),
       backgroundColor: AppColors.white,
-      body: BlocBuilder<ListBloc, ListState>(
-        builder: (context, state) {
+      body: BlocConsumer<ListBloc, ListState>(
+        listener: (context, state) {
           if (state is ListLoading) {
-            return const Center(child: CircularProgressIndicator());
+            const Center(child: CircularProgressIndicator());
           }
           if (state is ListError) {
-            return Center(child: Text(state.message));
+            Center(child: Text(state.message));
           }
+          if (state is DeleteListState) {
+            homeBloc.add(HomeGetAllTasksEvent());
+            listBloc.add(GetListEvent());
+          }
+        },
+        builder: (context, state) {
           if (state is GetListState) {
             final lists = state.listModel;
             if (lists.isEmpty) {
