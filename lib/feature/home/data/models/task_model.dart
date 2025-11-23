@@ -27,4 +27,20 @@ class TaskModel {
     required this.listModel,
     this.key,
   });
+
+  TaskModel copyWith({
+    String? text,
+    bool? isCompleted,
+    DateTime? time,
+    ListModel? listModel,
+    String? key,
+  }) {
+    return TaskModel(
+      text: text ?? this.text,
+      isCompleted: isCompleted ?? this.isCompleted,
+      time: time ?? this.time,
+      listModel: listModel ?? this.listModel,
+      key: key ?? this.key,
+    );
+  }
 }

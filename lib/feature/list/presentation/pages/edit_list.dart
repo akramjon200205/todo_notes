@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/core/route/routes.dart';
+import 'package:todo_notes/feature/home/data/models/task_model.dart';
+import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:todo_notes/feature/list/data/models/list_model.dart';
 import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 import 'package:todo_notes/feature/list/presentation/widgets/color_picker_widget.dart';
@@ -11,8 +13,13 @@ import 'package:todo_notes/feature/list/presentation/widgets/color_picker_widget
 class EditList extends StatefulWidget {
   final ListModel listModel;
   final int index;
-
-  const EditList({required this.listModel, required this.index, super.key});
+  final List<TaskModel> taskList;
+  const EditList({
+    required this.listModel,
+    required this.index,
+    required this.taskList,
+    super.key,
+  });
 
   @override
   State<EditList> createState() => _EditListState();
@@ -53,7 +60,15 @@ class _EditListState extends State<EditList> {
         listener: (context, state) {
           if (state is UpdateListState) {
             context.read<ListBloc>().add(GetListEvent());
-            Navigator.pop(context, AppRoutes.lists);
+            context.read<HomeBloc>().add(HomeGetAllTasksEvent());
+            context.read<HomeBloc>().add(
+              ListTasksEvent(context.read<ListBloc>().listModels),
+            );
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.home,
+              (route) => false,
+            );
           }
         },
         child: Padding(
@@ -140,8 +155,10 @@ class _EditListState extends State<EditList> {
                                 ? controller.text
                                 : widget.listModel.name,
                             color: bloc.listColor,
+                            key: widget.listModel.key ?? '',
                           ),
                           key: widget.listModel.key ?? '',
+                          taskList: widget.taskList,
                         ),
                       );
                     },

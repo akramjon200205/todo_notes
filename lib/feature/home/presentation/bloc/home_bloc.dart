@@ -17,7 +17,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   DateTime? tempDate;
   TimeOfDay? tempTime;
   ListModel? selectedList;
-  Map<ListModel, List<TaskModel>> listTasks = {};
+  Map<String, List<TaskModel>> listTasks = {};
 
   Map<DateTime, List<Color>> calendarTasks = {};
   HomeBloc(this.repository, this.listModelRepository) : super(HomeInitial()) {
@@ -37,19 +37,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _onListTasksEvent(ListTasksEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoading());
-    final List<ListModel> lists = event.lists;
+    final lists = event.lists;
 
-    final Map<ListModel, List<TaskModel>> result = {};
+    final Map<String, List<TaskModel>> result = {};
 
     for (var listModel in lists) {
-      final listTasks = taskList.where((task) {
-        return task.listModel.name == listModel.name;
+      final tasksForList = taskList.where((task) {
+        return task.listModel.key != null &&
+            task.listModel.key == listModel.key;
       }).toList();
-      result[listModel] = listTasks;
+
+      result[listModel.key ?? 'unknown'] = tasksForList;
     }
 
     listTasks = result;
-
     emit(ListTasksState());
   }
 

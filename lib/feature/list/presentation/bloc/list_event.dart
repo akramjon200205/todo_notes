@@ -19,10 +19,13 @@ class UpdateListEvent extends ListEvent {
   int index;
   String key;
   ListModel listModel;
+  List<TaskModel> taskList;
+
   UpdateListEvent({
     required this.index,
     required this.listModel,
     required this.key,
+    required this.taskList,
   });
 }
 

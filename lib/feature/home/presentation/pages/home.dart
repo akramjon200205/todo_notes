@@ -4,8 +4,8 @@ import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
-import 'package:todo_notes/feature/home/presentation/widgets/app_bar_task.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/backdrop_filter_widget.dart';
+import 'package:todo_notes/feature/home/presentation/widgets/divider_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/list_and_task_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/tasks_builder_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/lists_builder_widget.dart';
@@ -97,23 +97,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // AppBarTask(),
                       const SizedBox(height: 20),
                       TasksBuilderWidget(),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          bottom: 10,
-                          top: 10,
-                          left: 20,
-                          right: 20,
-                        ),
-                        child: Divider(
-                          height: 1,
-                          color: Colors.grey.shade300,
-                          indent: 30,
-                          endIndent: 0,
-                        ),
-                      ),
+                      DividerWidget(),
                       const ListsBuilderWidget(),
                       const SizedBox(height: 120),
                     ],

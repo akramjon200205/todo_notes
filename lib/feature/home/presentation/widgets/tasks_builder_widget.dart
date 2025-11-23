@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_notes/core/app_colors/app_colors.dart';
 import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/feature/home/presentation/bloc/home_bloc.dart';
+import 'package:todo_notes/feature/home/presentation/widgets/divider_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/slidable_widget.dart';
 import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 
@@ -61,14 +62,7 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
             );
           },
           separatorBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Divider(
-                height: 1,
-                color: Colors.grey.shade300,
-                indent: 30,
-              ),
-            );
+            return DividerWidget();
           },
         );
       },
@@ -91,3 +85,5 @@ class _TasksBuilderWidgetState extends State<TasksBuilderWidget> {
     return "Future days";
   }
 }
+
+

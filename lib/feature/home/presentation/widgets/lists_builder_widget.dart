@@ -37,7 +37,7 @@ class _ListsWidgetState extends State<ListsBuilderWidget> {
                 itemCount: lists.length,
                 itemBuilder: (context, index) {
                   final list = lists[index];
-                  final countTasks = listTasks[list]?.length ?? 0;
+                  final countTasks = listTasks[list.key ?? '']?.length ?? 0;
 
                   return ListsWidget(
                     name: list.name,

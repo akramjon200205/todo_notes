@@ -42,14 +42,24 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
   Future<void> _onUpdateListEvent(UpdateListEvent event, Emitter emit) async {
     emit(ListLoading());
-    final results = await listModelRepository.updateList(
+
+    final result = await listModelRepository.updateList(
       event.key,
       event.listModel,
     );
-    results.fold((l) => emit(ListError(l.message)), (r) {
-      listModels[event.index] = r;
-      emit(GetListState(listModels));
-    });
+    if (result.isLeft()) {
+      emit(ListError(result.fold((l) => l.message, (r) => '')));
+      return;
+    }
+    final updatedList = result.fold((l) => null, (r) => r)!;
+    listModels[event.index] = updatedList.copyWith();
+    for (var task in event.taskList) {
+      await homeRepository.updateTasks(
+        task.key!,
+        task.copyWith(listModel: updatedList),
+      );
+    }
+    emit(UpdateListState());
   }
 
   Future<void> _onGetListEvent(GetListEvent event, Emitter emit) async {

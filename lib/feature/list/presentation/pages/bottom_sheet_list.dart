@@ -6,11 +6,12 @@ import 'package:todo_notes/core/app_text_styles/app_text_styles.dart';
 import 'package:todo_notes/core/assets/assets.dart';
 import 'package:todo_notes/core/route/routes.dart';
 import 'package:todo_notes/feature/home/data/models/task_model.dart';
+import 'package:todo_notes/feature/home/presentation/widgets/divider_widget.dart';
 import 'package:todo_notes/feature/home/presentation/widgets/tasks_widget.dart';
 
 import 'package:todo_notes/feature/list/presentation/bloc/list_bloc.dart';
 
-class BottomSheetList extends StatelessWidget {
+class BottomSheetList extends StatefulWidget {
   final Color color;
   final int index;
   final String name;
@@ -24,6 +25,11 @@ class BottomSheetList extends StatelessWidget {
     required this.tasklist,
   });
 
+  @override
+  State<BottomSheetList> createState() => _BottomSheetListState();
+}
+
+class _BottomSheetListState extends State<BottomSheetList> {
   Color getTextColor(Color bgColor) {
     final lightColors = [Colors.white, Colors.amber, Colors.cyan];
     return lightColors.contains(bgColor) ? AppColors.black : AppColors.white;
@@ -32,7 +38,7 @@ class BottomSheetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final textColor = getTextColor(color);
+    final textColor = getTextColor(widget.color);
 
     return Material(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
@@ -41,7 +47,7 @@ class BottomSheetList extends StatelessWidget {
         width: size.width,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         decoration: BoxDecoration(
-          color: color,
+          color: widget.color,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
         ),
         child: Column(
@@ -49,11 +55,11 @@ class BottomSheetList extends StatelessWidget {
           children: [
             ListTile(
               title: Text(
-                name,
+                widget.name,
                 style: AppTextStyles.listName.copyWith(color: textColor),
               ),
               subtitle: Text(
-                "${tasklist.length} task",
+                "${widget.tasklist.length} task",
                 style: AppTextStyles.listsSubText.copyWith(color: textColor),
               ),
 
@@ -61,14 +67,15 @@ class BottomSheetList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {
                   final listBloc = context.read<ListBloc>();
-                  listBloc.add(ChangeColorEvent(color));
-
+                  listBloc.add(ChangeColorEvent(widget.color));
+                  Navigator.pop(context);
                   Navigator.pushNamed(
                     context,
                     AppRoutes.editList,
                     arguments: {
-                      'listModel': listBloc.listModels[index],
-                      'index': index,
+                      'listModel': listBloc.listModels[widget.index],
+                      'index': widget.index,
+                      'taskList': widget.tasklist,
                     },
                   );
                 },
@@ -82,23 +89,19 @@ class BottomSheetList extends StatelessWidget {
             ListView.separated(
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return TaskItemTile(title: tasklist[index].text, bgColor: color,);
-              },
-              separatorBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 20,
-                  ),
-                  child: Divider(
-                    height: 1,
-                    color: Colors.grey.shade300,
-                    indent: 30,
-                  ),
+                return TaskItemTile(
+                  isChecked: widget.tasklist[index].isCompleted,
+                  title: widget.tasklist[index].text,
+                  bgColor: widget.color,
+                  indicatorColor: widget.color,
                 );
               },
-              itemCount: tasklist.length,
+              separatorBuilder: (context, index) {
+                return DividerWidget();
+              },
+              itemCount: widget.tasklist.length,
             ),
+            widget.tasklist.isNotEmpty ? DividerWidget() : SizedBox.shrink(),
           ],
         ),
       ),

@@ -27,8 +27,11 @@ class AppRouter {
       case AppRoutes.editList:
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) =>
-              EditList(listModel: args['listModel'], index: args['index']),
+          builder: (_) => EditList(
+            listModel: args['listModel'],
+            index: args['index'],
+            taskList: args['taskList'],
+          ),
         );
 
       default:

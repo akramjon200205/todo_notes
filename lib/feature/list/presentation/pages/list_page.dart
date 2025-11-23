@@ -97,7 +97,7 @@ class _ListPageState extends State<ListPage> {
         centerTitle: true,
         leading: InkWell(
           borderRadius: BorderRadius.circular(30),
-          onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+          onTap: () => Navigator.pop(context),
           child: const Icon(CupertinoIcons.back, size: 22),
         ),
       ),
@@ -128,7 +128,7 @@ class _ListPageState extends State<ListPage> {
                     index,
                     listItem.name,
                     listItem.color,
-                    context.read<HomeBloc>().listTasks[listItem] ?? [],
+                    context.read<HomeBloc>().listTasks[listItem.key] ?? [],
                   ),
                   child: Slidable(
                     key: ValueKey(listItem),

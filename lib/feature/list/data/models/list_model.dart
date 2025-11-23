@@ -14,5 +14,21 @@ class ListModel {
   @HiveField(3)
   String? key;
 
-  ListModel({required this.name, required this.color, this.key});
+  ListModel({
+    required this.name,
+    required this.color,
+    this.key,
+  });
+
+  ListModel copyWith({
+    String? name,
+    Color? color,
+    String? key,
+  }) {
+    return ListModel(
+      name: name ?? this.name,
+      color: color ?? this.color,
+      key: key ?? this.key,
+    );
+  }
 }
